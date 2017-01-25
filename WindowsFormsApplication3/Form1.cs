@@ -20,42 +20,43 @@ namespace WindowsFormsApplication3
         {
             InitializeComponent();
 
-            FormBorderStyle = FormBorderStyle.None;             // Fjerner rammer.
-            this.TopMost = true;                                // Legger spillet øverst på Z-aksen.
-            this.Bounds = Screen.PrimaryScreen.Bounds;          // Fullskjerm-applikasjon.
-            pictureBox2.Bounds = Screen.PrimaryScreen.Bounds;
-            timer1.Enabled = false;
-            Refresh();
+            //FormBorderStyle = FormBorderStyle.None;             // Revomes frames
+            //this.TopMost = true;                                // Game is highest on the Z axis
+            //this.Bounds = Screen.PrimaryScreen.Bounds;          // FullScreen Application
+            //pictureBox2.Bounds = Screen.PrimaryScreen.Bounds;   // Front layer also full-screen
+            timer1.Enabled = false;                             // Sets timer to false.
+            //Refresh();                                          // Re-draws Form1 with all it's components.
         }
 
-        int startPosX, startPosY, curPosX, curPosY, torpSpeed;
+        int startPosX, startPosY;
+        float curPosX, curPosY, torpSpeed;
         Point startPos, relativePoint;
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            if (timer1.Enabled == false)
+            if (timer1.Enabled == false)                        // Seems like the click doesn't register until the previous click is done (i.e. it's queuing up torpedos)
             {
                 setTorpedoVariables();
 
                 timer1.Start();
 
-                MoveMissile();
                 Console.WriteLine("Launching missile against " + relativePoint);
+                MoveMissile();
 
                 timer1.Stop();
             }
             else
             {
-                Console.WriteLine("A torp is already flying.");
+                Console.WriteLine("A torp is already flying."); // This never executes - "if" does not work as intended.
             }
 
             
         }
-                
+
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Escape) { this.Close(); }     // Trykk Escape for å avslutte.
+            if (e.KeyCode == Keys.Escape) { this.Close(); }     // Use Esc key to close app
         }
 
         private void Form1_Click(object sender, EventArgs e)
@@ -72,8 +73,8 @@ namespace WindowsFormsApplication3
             curPosX = startPosX;
             curPosY = startPosY;
             startPos = new Point(startPosX, startPosY);
-            pictureBox1.Location = startPos;
 
+            pictureBox1.Location = startPos;
             Console.WriteLine(startPos);
         }
 
@@ -89,22 +90,39 @@ namespace WindowsFormsApplication3
 
             Console.WriteLine("to " + relativePoint.Y + " from" + pictureBox1.Location.Y);
 
-            float xDiff = relativePoint.X - startPos.X;
-            float yDiff = relativePoint.Y - startPos.Y;
-            double angle = Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI;
+            
 
             //pictureBox1 <- Here I want to change the angle of the picturebox
 
             while (pictureBox1.Location.Y > relativePoint.Y)
             {
-                curPosY -= torpSpeed;
-                pictureBox1.Location = new Point(curPosX, curPosY);
-                //pictureBox1.
+                float xDiff = relativePoint.X - startPos.X;
+                float yDiff = relativePoint.Y - startPos.Y;
+
+                double angle = Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI;
+                
+                float newPosX = pictureBox1.Location.X;
+                float newPosY = pictureBox1.Location.Y;
+
+                newPosX += (float) Math.Cos(angle) * torpSpeed;
+                newPosY += (float) Math.Sin(angle) * torpSpeed;
+
+                curPosY -= 10;
+
+                Console.WriteLine("X coords, cur and new:");
+                Console.WriteLine((int)curPosX);
+                Console.WriteLine((int)newPosX);
+
+                Console.WriteLine("Y coords, cur and new:");
+                Console.WriteLine((int)curPosY);
+                Console.WriteLine((int)newPosY);
+                
+                pictureBox1.Location = new Point((int)curPosX, (int)curPosY);
+                // pictureBox1.
 
                 Refresh();
 
-                Console.WriteLine(angle);
-                Console.WriteLine("Missile's Y coord is: " + curPosY);
+                Console.WriteLine("");
             }
             pictureBox1.Visible = false;
         }

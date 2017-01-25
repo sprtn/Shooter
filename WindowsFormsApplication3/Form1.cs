@@ -78,6 +78,7 @@ namespace WindowsFormsApplication3
         private Boolean EverySecondTick()
         {
             return timerCounter % 200 == 0;
+            Console.WriteLine("Right file");
         }
 
         private void MoveMissile()

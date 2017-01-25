@@ -15,7 +15,7 @@ namespace WindowsFormsApplication3
     public partial class Form1 : Form
     {
 
-
+        Enemy ent = new Enemy();
         public Form1()
         {
             InitializeComponent();
@@ -34,15 +34,15 @@ namespace WindowsFormsApplication3
         Point startPos, relativePoint;
         private int timerCounter;
 
+        public bool clicked = false;
+
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            if (pictureBox1.Location.Y <= ClientRectangle.Height-1)
+            if (pictureBox1.Location.Y <= ClientRectangle.Height - 1 && clicked == false)
             {
                 setTorpedoVariables();
-                Console.WriteLine("Launching missile against " + relativePoint);
-                MoveMissile();
+                clicked = true;
             }
-            
         }
 
 
@@ -59,12 +59,13 @@ namespace WindowsFormsApplication3
         private void setTorpedoVariables()
         {
             relativePoint = PointToClient(Cursor.Position);
-            torpSpeed = 1;
+            torpSpeed = 10;
             startPosX = ClientRectangle.Width / 2;
             startPosY = ClientRectangle.Height;
             curPosX = startPosX;
             curPosY = startPosY;
             startPos = new Point(startPosX, startPosY);
+            clicked = true;
 
             pictureBox1.Location = startPos;
             Console.WriteLine(startPos);
@@ -72,25 +73,45 @@ namespace WindowsFormsApplication3
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            ent.CreateEnemies();
             timerCounter++;
-        }
-
-        private Boolean EverySecondTick()
-        {
-            return timerCounter % 200 == 0;
+            if (clicked == true)
+            {
+                MoveMissile();
+            }
         }
 
         private void MoveMissile()
         {
-            pictureBox1.Visible = true;
+            if (clicked == true)
+            {
+                Console.WriteLine("Launching missile against " + relativePoint);
 
-            while (pictureBox1.Location.Y > relativePoint.Y)
-            {                 
-                pictureBox1.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
-                pictureBox1.Refresh();
+                pictureBox1.Visible = true;
+
+                if (pictureBox1.Location.Y > relativePoint.Y)
+                {
+                    pictureBox1.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
+                    pictureBox1.Refresh();
+                }
+                else
+                {
+                    pictureBox1.Visible = false;
+                    clicked = false;
+                }
             }
+        }
+    }
 
-            pictureBox1.Visible = false;
+    class Enemy
+    {
+        int x = new Random().Next(20);
+
+        public void CreateEnemies()
+        {
+            PictureBox uBoat = new PictureBox();
+            
+
         }
     }
 }

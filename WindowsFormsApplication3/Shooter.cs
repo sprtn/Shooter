@@ -124,5 +124,8 @@ namespace WindowsFormsApplication3
 
     Enemies/Invaders
         Need to add invaders
-
+            Pictures
+            Random speeds
+            Random heights
+            Random quant's
  */

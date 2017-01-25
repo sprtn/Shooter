@@ -19,38 +19,30 @@ namespace WindowsFormsApplication3
         public Form1()
         {
             InitializeComponent();
+            /*
+            FormBorderStyle = FormBorderStyle.None;             // Revomes frames
+            this.TopMost = true;                                // Game is highest on the Z axis
+            this.Bounds = Screen.PrimaryScreen.Bounds;          // FullScreen Application
+            pictureBox2.Bounds = Screen.PrimaryScreen.Bounds; */  // Front layer also full-screen
 
-            //FormBorderStyle = FormBorderStyle.None;             // Revomes frames
-            //this.TopMost = true;                                // Game is highest on the Z axis
-            //this.Bounds = Screen.PrimaryScreen.Bounds;          // FullScreen Application
-            //pictureBox2.Bounds = Screen.PrimaryScreen.Bounds;   // Front layer also full-screen
-            timer1.Enabled = false;                             // Sets timer to false.
-            //Refresh();                                          // Re-draws Form1 with all it's components.
+            pictureBox2.Bounds = ClientRectangle;
+            timer1.Enabled = true;                             // Sets timer to false.
+            //Refresh();                                        // Re-draws Form1 with all it's components.
         }
 
-        int startPosX, startPosY;
-        float curPosX, curPosY, torpSpeed;
+        int startPosX, startPosY, curPosX, curPosY, torpSpeed;
         Point startPos, relativePoint;
+        private int timerCounter;
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            if (timer1.Enabled == false)                        // Seems like the click doesn't register until the previous click is done (i.e. it's queuing up torpedos)
+            if (pictureBox1.Location.Y <= ClientRectangle.Height - 1)
             {
                 setTorpedoVariables();
-
-                timer1.Start();
-
                 Console.WriteLine("Launching missile against " + relativePoint);
                 MoveMissile();
-
-                timer1.Stop();
-            }
-            else
-            {
-                Console.WriteLine("A torp is already flying."); // This never executes - "if" does not work as intended.
             }
 
-            
         }
 
 
@@ -67,7 +59,7 @@ namespace WindowsFormsApplication3
         private void setTorpedoVariables()
         {
             relativePoint = PointToClient(Cursor.Position);
-            torpSpeed = 10;
+            torpSpeed = 1;
             startPosX = ClientRectangle.Width / 2;
             startPosY = ClientRectangle.Height;
             curPosX = startPosX;
@@ -80,51 +72,36 @@ namespace WindowsFormsApplication3
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            
+            timerCounter++;
+        }
+
+        private Boolean EverySecondTick()
+        {
+            return timerCounter % 200 == 0;
         }
 
         private void MoveMissile()
         {
             pictureBox1.Visible = true;
-            
-
-            Console.WriteLine("to " + relativePoint.Y + " from" + pictureBox1.Location.Y);
-
-            
-
-            //pictureBox1 <- Here I want to change the angle of the picturebox
 
             while (pictureBox1.Location.Y > relativePoint.Y)
             {
-                float xDiff = relativePoint.X - startPos.X;
-                float yDiff = relativePoint.Y - startPos.Y;
-
-                double angle = Math.Atan2(yDiff, xDiff) * 180.0 / Math.PI;
-                
-                float newPosX = pictureBox1.Location.X;
-                float newPosY = pictureBox1.Location.Y;
-
-                newPosX += (float) Math.Cos(angle) * torpSpeed;
-                newPosY += (float) Math.Sin(angle) * torpSpeed;
-
-                curPosY -= 10;
-
-                Console.WriteLine("X coords, cur and new:");
-                Console.WriteLine((int)curPosX);
-                Console.WriteLine((int)newPosX);
-
-                Console.WriteLine("Y coords, cur and new:");
-                Console.WriteLine((int)curPosY);
-                Console.WriteLine((int)newPosY);
-                
-                pictureBox1.Location = new Point((int)curPosX, (int)curPosY);
-                // pictureBox1.
-
-                Refresh();
-
-                Console.WriteLine("");
+                pictureBox1.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
+                pictureBox1.Refresh();
             }
+
             pictureBox1.Visible = false;
         }
     }
 }
+/*
+ Buglist:
+
+    Multiple projectiles:
+        Can launch several missiles by clicking several times.
+        The objectives dont all dissappear until the last click goes through.
+
+    Enemies/Invaders
+        Need to add invaders
+
+ */

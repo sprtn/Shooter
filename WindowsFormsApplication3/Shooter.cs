@@ -110,22 +110,25 @@ namespace WindowsFormsApplication3
         public void CreateEnemies()
         {
             PictureBox uBoat = new PictureBox();
-            
+
 
         }
     }
 }
 /*
  Buglist:
-
-    Multiple projectiles:
-        Can launch several missiles by clicking several times.
-        The objectives dont all dissappear until the last click goes through.
-
+ 
     Enemies/Invaders
         Need to add invaders
             Pictures
             Random speeds
             Random heights
             Random quant's
+            
+    F.Multiple projectiles:
+        F.Can launch several missiles by clicking several times.
+        F.The objectives dont all dissappear until the last click goes through.
+
+    Might find some useful info here:
+    http://www.c-sharpcorner.com/article/space-invaders-for-C-Sharp-and-net/
  */

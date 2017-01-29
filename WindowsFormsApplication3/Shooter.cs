@@ -11,30 +11,22 @@ using System.Windows.Forms;
 namespace WindowsFormsApplication3
 {
 
-
     public partial class Form1 : Form
     {
-
-        Enemy ent = new Enemy();
         public Form1()
         {
             InitializeComponent();
-            /*
-            FormBorderStyle = FormBorderStyle.None;             // Revomes frames
-            this.TopMost = true;                                // Game is highest on the Z axis
-            this.Bounds = Screen.PrimaryScreen.Bounds;          // FullScreen Application
-            pictureBox2.Bounds = Screen.PrimaryScreen.Bounds; */  // Front layer also full-screen
-
+            //Enemy enemyClass = new Enemy();
             pictureBox2.Bounds = ClientRectangle;
-            timer1.Enabled = true;                             // Sets timer to false.
-            //Refresh();                                        // Re-draws Form1 with all it's components.
+            timer1.Enabled = true;
         }
 
-        int startPosX, startPosY, curPosX, curPosY, torpSpeed;
+        int startPosX, startPosY, curPosX, curPosY, torpSpeed, uPosX, uPosY, uSpeed;
         Point startPos, relativePoint;
         private int timerCounter;
 
         public bool clicked = false;
+        private bool impact;
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
@@ -73,12 +65,68 @@ namespace WindowsFormsApplication3
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            ent.CreateEnemies();
+            EnemyControl();
+            MissileControl();
+            CollisionControl();
             timerCounter++;
+        }
+
+        private void CollisionControl()
+        {
+            if (pictureBox1.Bounds.IntersectsWith(pictureBox3.Bounds))
+            {
+                pictureBox1.Location = new Point(startPosX, startPosY);
+                pictureBox3.Visible = false;
+                pictureBox1.Visible = false;
+                clicked = false;
+            }
+        }
+
+        private void MissileControl()
+        {
             if (clicked == true)
             {
                 MoveMissile();
             }
+        }
+
+        private void EnemyControl()
+        {
+            if (pictureBox3.Visible == false)
+            {
+                createEnemy();
+            }
+            if (pictureBox3.Visible == true && !impact)
+            {
+                moveEnemy();
+            }
+        }
+
+        private void moveEnemy()
+        {
+            uPosX += uSpeed;
+            pictureBox3.Location = new Point(uPosX, uPosY);
+            if (uPosX >= ClientRectangle.Width || impact)
+            {
+                pictureBox3.Visible = false;
+                Refresh();
+            }
+            pictureBox3.Refresh();
+        }
+
+        private void createEnemy()
+        {
+            if (pictureBox3.Visible == false)
+            {
+                clicked = false;
+                Random r = new Random();
+                uPosX = 0 - pictureBox3.Width;
+                uSpeed = 1 + r.Next(10); // Must be a rand
+                uPosY = 10 + r.Next(70); // Must be a rand
+                pictureBox3.Visible = true;
+                pictureBox3.Location = new Point(uPosX, uPosY);
+            }
+            
         }
 
         private void MoveMissile()
@@ -89,30 +137,24 @@ namespace WindowsFormsApplication3
 
                 pictureBox1.Visible = true;
 
-                if (pictureBox1.Location.Y > relativePoint.Y)
+                if (pictureBox1.Location.Y >= relativePoint.Y)
                 {
                     pictureBox1.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
                     pictureBox1.Refresh();
                 }
                 else
                 {
+                    pictureBox1.Location = new Point(startPosX, startPosY);
                     pictureBox1.Visible = false;
                     clicked = false;
                 }
             }
+            if (clicked == false)
+            {
+                relativePoint = new Point(0, 0);
+            }
         }
-    }
-
-    class Enemy
-    {
-        int x = new Random().Next(20);
-
-        public void CreateEnemies()
-        {
-            PictureBox uBoat = new PictureBox();
-
-
-        }
+        
     }
 }
 /*
@@ -120,10 +162,14 @@ namespace WindowsFormsApplication3
  
     Enemies/Invaders
         Need to add invaders
-            Pictures
-            Random speeds
-            Random heights
-            Random quant's
+            F.Pictures
+            F.Moving enemies
+            F.Random speeds
+            F.Random heights
+            Random quantities
+            
+    Missiles
+        Missiles no longer work as they should
             
     F.Multiple projectiles:
         F.Can launch several missiles by clicking several times.

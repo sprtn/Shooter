@@ -35,6 +35,7 @@ namespace WindowsFormsApplication3
                 setTorpedoVariables();
                 clicked = true;
             }
+            Console.WriteLine("Not a valid click");
         }
 
 
@@ -45,7 +46,7 @@ namespace WindowsFormsApplication3
 
         private void Form1_Click(object sender, EventArgs e)
         {
-            // Console.WriteLine("Wrong click recorded");
+            Console.WriteLine("Wrong click recorded");
         }
 
         private void setTorpedoVariables()
@@ -73,19 +74,25 @@ namespace WindowsFormsApplication3
 
         private void CollisionControl()
         {
-            if (pictureBox1.Bounds.IntersectsWith(pictureBox3.Bounds))
+            impact = pictureBox1.Bounds.IntersectsWith(pictureBox3.Bounds);
+            if (impact)
             {
-                pictureBox1.Location = new Point(startPosX, startPosY);
-                pictureBox3.Visible = false;
-                pictureBox1.Visible = false;
-                clicked = false;
+                ResetAllComp();
             }
+        }
+
+        private void ResetAllComp()
+        {
+            Console.WriteLine("Explosion.");
+            MissileReset();
+            clicked = false;
         }
 
         private void MissileControl()
         {
             if (clicked == true)
             {
+                Console.WriteLine("Clicked.");
                 MoveMissile();
             }
         }
@@ -94,33 +101,30 @@ namespace WindowsFormsApplication3
         {
             if (pictureBox3.Visible == false)
             {
-                createEnemy();
+                CreateEnemy();
             }
-            if (pictureBox3.Visible == true && !impact)
+            if (pictureBox3.Visible == true)
             {
-                moveEnemy();
+                MoveEnemy();
             }
         }
 
-        private void moveEnemy()
+        private void MoveEnemy()
         {
             uPosX += uSpeed;
             pictureBox3.Location = new Point(uPosX, uPosY);
-            if (uPosX >= ClientRectangle.Width || impact)
+            if (uPosX >= ClientRectangle.Width)
             {
                 pictureBox3.Visible = false;
-                Refresh();
             }
-            pictureBox3.Refresh();
         }
 
-        private void createEnemy()
+        private void CreateEnemy()
         {
             if (pictureBox3.Visible == false)
             {
-                clicked = false;
                 Random r = new Random();
-                uPosX = 0 - pictureBox3.Width;
+                uPosX = -pictureBox3.Width;
                 uSpeed = 1 + r.Next(10); // Must be a rand
                 uPosY = 10 + r.Next(70); // Must be a rand
                 pictureBox3.Visible = true;
@@ -133,28 +137,23 @@ namespace WindowsFormsApplication3
         {
             if (clicked == true)
             {
-                Console.WriteLine("Launching missile against " + relativePoint);
-
                 pictureBox1.Visible = true;
-
-                if (pictureBox1.Location.Y >= relativePoint.Y)
+                if (pictureBox1.Location.Y >= 10)
                 {
                     pictureBox1.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
-                    pictureBox1.Refresh();
                 }
                 else
                 {
-                    pictureBox1.Location = new Point(startPosX, startPosY);
-                    pictureBox1.Visible = false;
-                    clicked = false;
+                    MissileReset();
                 }
             }
-            if (clicked == false)
-            {
-                relativePoint = new Point(0, 0);
-            }
         }
-        
+
+        private void MissileReset()
+        {
+            pictureBox1.Visible = false;
+            pictureBox1.Location = new Point(startPosX, startPosY);
+        }
     }
 }
 /*

@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="pictureBox1.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="Torpedo.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         R0lGODlhPQATAYcAAAAAAAIIGwAOJQcUKAocMhcYKQ0iNxgiOCkRHyYYKiYcMzYVKCokOjUlOhkrQSkq
         Qig1SSs9UjcrQzY1STc6Uy5BVjZFWTpMYT9QYkQVHFEXHEMTI1keIEchLEYnNl4iIlYqN10yOHscGnYi
@@ -935,7 +935,7 @@
         GrmAHHpWFQe9aUanszI56tFzaa3R0n//2Q==
 </value>
   </data>
-  <data name="pictureBox3.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="Uboat.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         R0lGODlhrwMsAYcAAAAAAA0bHBkPDRcNGBoXDRsYFxwaIhsjGBouJiQZGCgaIyQkDSclGiQ0HTQhDTIp
         HDM1HCooJSoqMSY1KCk2MjIqKTQsMjMzKzc2NDo6RQFUHAVTLARuMytCGzpEOCFjOQh0RS5DQyVaQitd

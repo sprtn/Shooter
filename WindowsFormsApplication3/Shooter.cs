@@ -60,8 +60,10 @@ namespace WindowsFormsApplication3
         {
             relativePoint = PointToClient(Cursor.Position);
             torpSpeed = 30;
+
             startPosX = ClientRectangle.Width / 2;
             startPosY = ClientRectangle.Height;
+
             curPosX = startPosX;
             curPosY = startPosY;
             startPos = new Point(startPosX, startPosY);
@@ -79,6 +81,7 @@ namespace WindowsFormsApplication3
             LabelUpdates();
             if (lossCondition())
             {
+                // Add loss event
                 Console.WriteLine("You lost! " + ammunition + " ammo, " + score + " score");
             }
         }
@@ -89,9 +92,7 @@ namespace WindowsFormsApplication3
             {
                 lossCount++;
                 if (lossCount == 50)
-                {
                     return true;
-                }
             }
             if (ammunition > 0)
             {
@@ -99,17 +100,13 @@ namespace WindowsFormsApplication3
                 return false;
             }
             else
-            {
                 return false;
-            }
         }
 
         private void LabelUpdates()
         {
             if (pictureBox2.Bounds != ClientRectangle)
-            {
                 pictureBox2.Bounds = ClientRectangle;
-            }
             IsClicked.Text = clicked.ToString();
             TorpXY.Text = curPosX + ", " + curPosY;
             UboatXY.Text = Uboat.Location.X + ", " + Uboat.Location.Y;
@@ -131,36 +128,25 @@ namespace WindowsFormsApplication3
 
         private void ResetAllComp()
         {
-            Console.WriteLine("Explosion.");
             if (impact)
-            {
                 Uboat.Visible = false;
-            }
             MissileReset();
         }
 
         private void MissileControl()
         {
             if (clicked == true)
-            {
                 MoveMissile();
-            }
-            else if (clicked == false)
-            {
+            else
                 MissileReset();
-            }
         }
 
         private void EnemyControl()
         {
             if (Uboat.Visible == false)
-            {
                 CreateEnemy();
-            }
             if (Uboat.Visible == true)
-            {
                 MoveEnemy();
-            }
         }
 
         private void MoveEnemy()
@@ -168,9 +154,7 @@ namespace WindowsFormsApplication3
             uPosX += uSpeed;
             Uboat.Location = new Point(uPosX, uPosY);
             if (uPosX >= ClientRectangle.Width)
-            {
                 Uboat.Visible = false;
-            }
         }
 
         private void CreateEnemy()
@@ -178,14 +162,16 @@ namespace WindowsFormsApplication3
             if (Uboat.Visible == false)
             {
                 Random r = new Random();
+
                 uPosX = -Uboat.Width;
                 uSpeed = r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
-                CurrentSpeed.Text = uSpeed.ToString();
                 uPosY = 10 + r.Next(10, 150); // Must be a rand
+
+                CurrentSpeed.Text = uSpeed.ToString();
+                
                 Uboat.Visible = true;
                 Uboat.Location = new Point(uPosX, uPosY);
             }
-
         }
 
 
@@ -195,13 +181,9 @@ namespace WindowsFormsApplication3
             {
                 Torpedo.Visible = true;
                 if (Torpedo.Location.Y >= 10)
-                {
                     Torpedo.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
-                }
                 else
-                {
                     MissileReset();
-                }
             }
         }
 

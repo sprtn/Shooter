@@ -234,6 +234,9 @@ namespace WindowsFormsApplication3
         Show highscores
 
     Add loss/game over condition
+        F.Add condition
+        Add effect
+        Add highscore saving 
             
     Missiles
         F.Missileno longer work as they should

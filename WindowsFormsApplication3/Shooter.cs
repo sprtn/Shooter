@@ -18,30 +18,29 @@ namespace WindowsFormsApplication3
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
-            pictureBox2.Bounds = ClientRectangle;
             timer1.Enabled = true;
+            setMinMax(UMinSpeed, UMaxSpeed);
         }
 
-        int startPosX, startPosY, curPosX, curPosY, torpSpeed, uPosX, uPosY, uSpeed, ammunition = 2, score, UMinSpeed = 1, UMaxSpeed = 11, diffLevel, lossCount;
+        int startPosX, startPosY, 
+            curPosX, curPosY, 
+            uPosX, uPosY, 
+            uSpeed, UMinSpeed, UMaxSpeed,
+            torpSpeed, ammunition = 10, 
+            score, diffLevel;
+
         Point startPos, relativePoint;
-        private int timerCounter;
 
         private bool clicked = false;
         private bool impact;
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            if ((impact == true || clicked == false) && ammunition > 0)
+            if (clicked == false && ammunition > 0)
             {
                 setTorpedoVariables();
                 ammunition--;
                 clicked = true;
-                diffLevel++;
-                if (diffLevel % 4 == 0)
-                {
-                    UMinSpeed++;
-                    UMaxSpeed++;
-                }
             }
         }
 
@@ -49,6 +48,11 @@ namespace WindowsFormsApplication3
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape) { this.Close(); }     // Use Esc key to close app
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            SetGUI();
         }
 
         private void Form1_Click(object sender, EventArgs e)
@@ -81,48 +85,58 @@ namespace WindowsFormsApplication3
             LabelUpdates();
             if (lossCondition())
             {
-                // Add loss event
+                timer1.Stop();
                 Console.WriteLine("You lost! " + ammunition + " ammo, " + score + " score");
             }
         }
 
         private bool lossCondition()
         {
-            while (ammunition == 0)
-            {
-                lossCount++;
-                if (lossCount == 50)
-                    return true;
-            }
-            if (ammunition > 0)
-            {
-                lossCount = 0;
-                return false;
-            }
+            if (ammunition == 0 && clicked == false)
+                return true;
             else
                 return false;
         }
 
         private void LabelUpdates()
         {
-            if (pictureBox2.Bounds != ClientRectangle)
-                pictureBox2.Bounds = ClientRectangle;
             IsClicked.Text = clicked.ToString();
             TorpXY.Text = curPosX + ", " + curPosY;
             UboatXY.Text = Uboat.Location.X + ", " + Uboat.Location.Y;
             ScoreLabel.Text = "Score:" + score;
             AmmoLabel.Text = "Ammo: " + ammunition;
-            timerCounter++;
+        }
+
+        private void SetGUI()
+        {
+            int inset = 50;
+            if (pictureBox2.Bounds != ClientRectangle)
+                pictureBox2.Bounds = ClientRectangle;
+            if (pictureBox2.Visible == false)
+                pictureBox2.Visible = true;
+            UboatXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset);
+            TorpXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset / 2);
         }
 
         private void CollisionControl()
         {
             if (Torpedo.Bounds.IntersectsWith(Uboat.Bounds))
             {
-                score += uSpeed;
+                impact = true;
+                diffLevel++;
+                score += (10 + uSpeed);
                 ammunition += 1;
                 Uboat.Visible = false;
                 MissileReset();
+
+                if (diffLevel % 4 == 0 && diffLevel != 0)
+                {
+                    setMinMax(UMinSpeed, UMaxSpeed);
+                }
+                else if (UMinSpeed == 0 || UMaxSpeed == 0)
+                {
+                    setMinMax();
+                }
             }
         }
 
@@ -162,10 +176,20 @@ namespace WindowsFormsApplication3
             if (Uboat.Visible == false)
             {
                 Random r = new Random();
+                int LeftRight = r.Next(100);
 
-                uPosX = -Uboat.Width;
-                uSpeed = r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
                 uPosY = 10 + r.Next(10, 150); // Must be a rand
+                uSpeed = r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
+
+                if (LeftRight >= 50)
+                {
+                    uPosX = -Uboat.Width;
+                }
+                else if (LeftRight < 50)
+                {
+                    uPosX = ClientRectangle.Width + Uboat.Width;
+                    uSpeed = -r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
+                }
 
                 CurrentSpeed.Text = uSpeed.ToString();
                 
@@ -174,6 +198,18 @@ namespace WindowsFormsApplication3
             }
         }
 
+        private void setMinMax(int min, int max)
+        {
+            UMinSpeed = min + 1;
+            UMaxSpeed = max + 1;
+            // eller 'UMinSpeed += 1;' eller 'UMinSpeed++';
+        }
+
+        private void setMinMax()
+        {
+            UMinSpeed = 1;
+            UMaxSpeed = 11;
+        }
 
         private void MoveMissile()
         {
@@ -204,7 +240,7 @@ namespace WindowsFormsApplication3
             F.Pictures
             F.Moving enemies
             F.Random speeds
-            Change the speed increase
+            F.Change the speed increase
 
             F.Random heights
             Random quantities

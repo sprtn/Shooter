@@ -76,6 +76,7 @@
             this.pictureBox2.Size = new System.Drawing.Size(1257, 533);
             this.pictureBox2.TabIndex = 1;
             this.pictureBox2.TabStop = false;
+            this.pictureBox2.Visible = false;
             this.pictureBox2.Click += new System.EventHandler(this.pictureBox2_Click);
             // 
             // Uboat
@@ -100,7 +101,6 @@
             this.CurrentSpeed.Size = new System.Drawing.Size(35, 13);
             this.CurrentSpeed.TabIndex = 3;
             this.CurrentSpeed.Text = "label1";
-            this.CurrentSpeed.Visible = false;
             // 
             // IsClicked
             // 
@@ -110,7 +110,6 @@
             this.IsClicked.Size = new System.Drawing.Size(35, 13);
             this.IsClicked.TabIndex = 4;
             this.IsClicked.Text = "label1";
-            this.IsClicked.Visible = false;
             // 
             // TorpXY
             // 
@@ -168,6 +167,7 @@
             this.Text = "Form1";
             this.Click += new System.EventHandler(this.Form1_Click);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).EndInit();

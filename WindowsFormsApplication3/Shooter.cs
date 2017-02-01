@@ -11,6 +11,33 @@ using System.Windows.Forms;
 namespace WindowsFormsApplication3
 {
 
+    /// <summary>
+    /// One of the major things in this project is, for me, to show my grasp of all the concepts required to make this game.
+    /// As per now (01.02.17), I feel like this is not shown, as I do not implement different classes for the enemies, torpedo's
+    /// and such.
+    /// 
+    /// Future implementation need to implement, before delivery:
+    /// Enemy Class
+    ///     Uboat class, which inherits values from Enemy class.
+    ///     Boss class, which inherits values from Enemy Class.
+    /// Torpedo / Missile / Projectile Class
+    /// 
+    /// The Form is resizable, and resizes when changes are made. All the elements should be resize-friendly, 
+    /// except the Enemy placement on the Y axis. I think I can fix this quite easily with making the uPosY a range between
+    /// object.height and ClientRectangle.Height - 25%(?) of ClientRectangle.Height. This means that the top 75% of the screen,
+    /// -object height, can spawn enemies.
+    /// 
+    /// Also need a proper function for whether the elements spawn left or right, which has been started on this session,
+    /// but not implemented properly, mainly because I have focused on other implementations, bugfixes and other stuff that
+    /// has annoyed me for quite some time.
+    /// 
+    /// The entire project needs a full re-write from the most basic of functions (missile movement, enemy movement) to
+    /// the more "advanced" (spawning enemies, ticks etc.)
+    /// 
+    /// I also need to optimize the program further, since I see that it takes a bit more RAM than I would expect 
+    /// for such a small project.
+    /// </summary>
+
     public partial class Form1 : Form
     {
         public Form1()
@@ -105,6 +132,7 @@ namespace WindowsFormsApplication3
             UboatXY.Text = Uboat.Location.X + ", " + Uboat.Location.Y;
             ScoreLabel.Text = "Score:" + score;
             AmmoLabel.Text = "Ammo: " + ammunition;
+            Difficulty.Text = "Level " + diffLevel / 4;
         }
 
         private void SetGUI()

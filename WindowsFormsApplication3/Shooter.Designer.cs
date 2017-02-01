@@ -40,6 +40,7 @@
             this.UboatXY = new System.Windows.Forms.Label();
             this.ScoreLabel = new System.Windows.Forms.Label();
             this.AmmoLabel = new System.Windows.Forms.Label();
+            this.Difficulty = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
@@ -147,6 +148,15 @@
             this.AmmoLabel.TabIndex = 8;
             this.AmmoLabel.Text = "label1";
             // 
+            // Difficulty
+            // 
+            this.Difficulty.AutoSize = true;
+            this.Difficulty.Location = new System.Drawing.Point(1215, 0);
+            this.Difficulty.Name = "Difficulty";
+            this.Difficulty.Size = new System.Drawing.Size(35, 13);
+            this.Difficulty.TabIndex = 9;
+            this.Difficulty.Text = "label1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -154,6 +164,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1261, 627);
+            this.Controls.Add(this.Difficulty);
             this.Controls.Add(this.AmmoLabel);
             this.Controls.Add(this.ScoreLabel);
             this.Controls.Add(this.UboatXY);
@@ -188,6 +199,7 @@
         private System.Windows.Forms.Label UboatXY;
         private System.Windows.Forms.Label ScoreLabel;
         private System.Windows.Forms.Label AmmoLabel;
+        private System.Windows.Forms.Label Difficulty;
     }
 }
 

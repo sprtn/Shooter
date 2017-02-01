@@ -19,7 +19,7 @@ namespace WindowsFormsApplication3
             WindowState = FormWindowState.Maximized;
             InitializeComponent();
             timer1.Enabled = true;
-            setMinMax(UMinSpeed, UMaxSpeed);
+            setMinMax();
         }
 
         int startPosX, startPosY, 
@@ -114,8 +114,14 @@ namespace WindowsFormsApplication3
                 pictureBox2.Bounds = ClientRectangle;
             if (pictureBox2.Visible == false)
                 pictureBox2.Visible = true;
+
             UboatXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset);
             TorpXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset / 2);
+            ScoreLabel.Location = new Point(inset - ScoreLabel.Width, inset / 2);
+            AmmoLabel.Location = new Point(inset - AmmoLabel.Width, inset);
+            CurrentSpeed.Location = new Point(inset - CurrentSpeed.Width, ClientRectangle.Height - inset);
+            IsClicked.Location = new Point(inset - IsClicked.Width, ClientRectangle.Height - inset / 2);
+            Difficulty.Location = new Point(ClientRectangle.Width - inset, inset / 2);
         }
 
         private void CollisionControl()
@@ -180,14 +186,18 @@ namespace WindowsFormsApplication3
 
                 uPosY = 10 + r.Next(10, 150); // Must be a rand
                 uSpeed = r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
+                Console.WriteLine(LeftRight);
 
                 if (LeftRight >= 50)
                 {
+                    Console.WriteLine("Left Spawn");
                     uPosX = -Uboat.Width;
+                    uSpeed = r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
                 }
                 else if (LeftRight < 50)
                 {
-                    uPosX = ClientRectangle.Width + Uboat.Width;
+                    Console.WriteLine("Right Spawn");
+                    uPosX = pictureBox2.Width + Uboat.Width;
                     uSpeed = -r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
                 }
 
@@ -199,9 +209,12 @@ namespace WindowsFormsApplication3
         }
 
         private void setMinMax(int min, int max)
-        {
-            UMinSpeed = min + 1;
-            UMaxSpeed = max + 1;
+        { 
+            if (max > 10)
+                UMaxSpeed++;
+            if (min > 0)
+                UMinSpeed++;
+            
             // eller 'UMinSpeed += 1;' eller 'UMinSpeed++';
         }
 
@@ -209,6 +222,26 @@ namespace WindowsFormsApplication3
         {
             UMinSpeed = 1;
             UMaxSpeed = 11;
+        }
+
+        class Enemy
+        {
+            Enemy(int _MinSpeed, int _MaxSpeed, String _Type)
+            {
+                Random r = new Random();
+                int _RightLeft = r.Next(0,2);
+
+                if (_RightLeft == 1)
+                {
+                    Console.WriteLine("Left side spawn.");
+                    PictureBox enemyPicture = new PictureBox();
+                }
+                else
+                {
+                    Console.WriteLine("Right side spawn.");
+                    PictureBox enemyPicture = new PictureBox();
+                }
+            }
         }
 
         private void MoveMissile()

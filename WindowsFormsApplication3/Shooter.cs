@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace WindowsFormsApplication3
 {
@@ -49,11 +51,11 @@ namespace WindowsFormsApplication3
             setMinMax();
         }
 
-        int startPosX, startPosY, 
-            curPosX, curPosY, 
-            uPosX, uPosY, 
+        int startPosX, startPosY,
+            curPosX, curPosY,
+            uPosX, uPosY,
             uSpeed, UMinSpeed, UMaxSpeed,
-            torpSpeed, ammunition = 10, 
+            torpSpeed, ammunition = 10,
             score, diffLevel;
 
         Point startPos, relativePoint;
@@ -230,19 +232,19 @@ namespace WindowsFormsApplication3
                 }
 
                 CurrentSpeed.Text = uSpeed.ToString();
-                
+
                 Uboat.Visible = true;
                 Uboat.Location = new Point(uPosX, uPosY);
             }
         }
 
         private void setMinMax(int min, int max)
-        { 
+        {
             if (max > 10)
                 UMaxSpeed++;
             if (min > 0)
                 UMinSpeed++;
-            
+
             // eller 'UMinSpeed += 1;' eller 'UMinSpeed++';
         }
 
@@ -257,12 +259,17 @@ namespace WindowsFormsApplication3
             Enemy(int _MinSpeed, int _MaxSpeed, String _Type)
             {
                 Random r = new Random();
-                int _RightLeft = r.Next(0,2);
+                int _RightLeft = r.Next(0, 2);
 
+                Spawn(_RightLeft);
+            }
+
+            private void Spawn(int _RightLeft)
+            {
                 if (_RightLeft == 1)
                 {
                     Console.WriteLine("Left side spawn.");
-                    PictureBox enemyPicture = new PictureBox();
+                    PictureBox enemyPicture = new PictureBox(); // Ønsker å ha ny Form1.Uboat
                 }
                 else
                 {
@@ -277,7 +284,7 @@ namespace WindowsFormsApplication3
             if (clicked == true)
             {
                 Torpedo.Visible = true;
-                if (Torpedo.Location.Y >= 10)
+                if (Torpedo.Location.Y >= 0)
                     Torpedo.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
                 else
                     MissileReset();
@@ -290,31 +297,41 @@ namespace WindowsFormsApplication3
             clicked = false;
             Torpedo.Location = startPos;
         }
+
     }
+
 }
 
 /*
  Buglist:
  
+    Make Enemy class
+        Randomize right/left direction of attack
+        Create a new picturebox 
+            similar to the Uboat picturebox, 
+            since we do not have permission 
+            to create a new instance of it.
+
     Enemies/Invaders
         Need to add invaders
             F.Pictures
             F.Moving enemies
             F.Random speeds
             F.Change the speed increase
-
             F.Random heights
             Random quantities
         Boss invader
             Invader HP + regular's hp
     
-    Highscores
+    Score
         Save to .txt
         Show highscores
+        Make the player lose score when a uboat passes
 
     Add loss/game over condition
         F.Add condition
-        Add effect
+        F.Add effect
+        Open Menu for Highscore save within the Client
         Add highscore saving 
             
     Missiles
@@ -326,4 +343,7 @@ namespace WindowsFormsApplication3
 
     Might find some useful info here:
     http://www.c-sharpcorner.com/article/space-invaders-for-C-Sharp-and-net/
+
+    Go chicken go!
+
  */

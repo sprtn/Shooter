@@ -259,10 +259,15 @@ namespace WindowsFormsApplication3
                 Random r = new Random();
                 int _RightLeft = r.Next(0,2);
 
+                Spawn(_RightLeft);
+            }
+
+            private void Spawn(int _RightLeft)
+            {
                 if (_RightLeft == 1)
                 {
                     Console.WriteLine("Left side spawn.");
-                    PictureBox enemyPicture = new PictureBox();
+                    PictureBox enemyPicture = new PictureBox(); // Ønsker å ha ny Form1.Uboat
                 }
                 else
                 {
@@ -277,7 +282,7 @@ namespace WindowsFormsApplication3
             if (clicked == true)
             {
                 Torpedo.Visible = true;
-                if (Torpedo.Location.Y >= 10)
+                if (Torpedo.Location.Y >= 0)
                     Torpedo.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
                 else
                     MissileReset();
@@ -296,25 +301,33 @@ namespace WindowsFormsApplication3
 /*
  Buglist:
  
+    Make Enemy class
+        Randomize right/left direction of attack
+        Create a new picturebox 
+            similar to the Uboat picturebox, 
+            since we do not have permission 
+            to create a new instance of it.
+
     Enemies/Invaders
         Need to add invaders
             F.Pictures
             F.Moving enemies
             F.Random speeds
             F.Change the speed increase
-
             F.Random heights
             Random quantities
         Boss invader
             Invader HP + regular's hp
     
-    Highscores
+    Score
         Save to .txt
         Show highscores
+        Make the player lose score when a uboat passes
 
     Add loss/game over condition
         F.Add condition
-        Add effect
+        F.Add effect
+        Open Menu for Highscore save within the Client
         Add highscore saving 
             
     Missiles

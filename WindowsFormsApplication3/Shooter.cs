@@ -241,9 +241,9 @@ namespace WindowsFormsApplication3
             if (max > 10)
                 UMaxSpeed++;
             if (min > 0)
+
                 UMinSpeed++;
-            
-            // eller 'UMinSpeed += 1;' eller 'UMinSpeed++';
+            // eller 'UMinSpeed += 1;' eller 'UMinSpeed = UMinSpeed + 1;'
         }
 
         private void setMinMax()
@@ -263,6 +263,7 @@ namespace WindowsFormsApplication3
                 {
                     Console.WriteLine("Left side spawn.");
                     PictureBox enemyPicture = new PictureBox();
+                    
                 }
                 else
                 {

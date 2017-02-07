@@ -41,9 +41,15 @@
             this.ScoreLabel = new System.Windows.Forms.Label();
             this.AmmoLabel = new System.Windows.Forms.Label();
             this.Difficulty = new System.Windows.Forms.Label();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.newGameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showHighscoresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showHighscoresToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.submitHighscoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // Torpedo
@@ -71,7 +77,7 @@
             this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
             this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Cross;
-            this.pictureBox2.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox2.Location = new System.Drawing.Point(9, 30);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(1257, 533);
@@ -157,6 +163,45 @@
             this.Difficulty.TabIndex = 9;
             this.Difficulty.Text = "label1";
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newGameToolStripMenuItem,
+            this.showHighscoresToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(1261, 24);
+            this.menuStrip1.TabIndex = 10;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // newGameToolStripMenuItem
+            // 
+            this.newGameToolStripMenuItem.Name = "newGameToolStripMenuItem";
+            this.newGameToolStripMenuItem.Size = new System.Drawing.Size(77, 20);
+            this.newGameToolStripMenuItem.Text = "New Game";
+            this.newGameToolStripMenuItem.Click += new System.EventHandler(this.newGameToolStripMenuItem_Click);
+            // 
+            // showHighscoresToolStripMenuItem
+            // 
+            this.showHighscoresToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showHighscoresToolStripMenuItem1,
+            this.submitHighscoreToolStripMenuItem});
+            this.showHighscoresToolStripMenuItem.Name = "showHighscoresToolStripMenuItem";
+            this.showHighscoresToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
+            this.showHighscoresToolStripMenuItem.Text = "Highscores";
+            // 
+            // showHighscoresToolStripMenuItem1
+            // 
+            this.showHighscoresToolStripMenuItem1.Name = "showHighscoresToolStripMenuItem1";
+            this.showHighscoresToolStripMenuItem1.Size = new System.Drawing.Size(187, 22);
+            this.showHighscoresToolStripMenuItem1.Text = "Show Highscores";
+            // 
+            // submitHighscoreToolStripMenuItem
+            // 
+            this.submitHighscoreToolStripMenuItem.Name = "submitHighscoreToolStripMenuItem";
+            this.submitHighscoreToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.submitHighscoreToolStripMenuItem.Text = "Submit Current Score";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -174,6 +219,8 @@
             this.Controls.Add(this.Uboat);
             this.Controls.Add(this.Torpedo);
             this.Controls.Add(this.pictureBox2);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
             this.Click += new System.EventHandler(this.Form1_Click);
@@ -182,6 +229,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).EndInit();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -200,6 +249,11 @@
         private System.Windows.Forms.Label ScoreLabel;
         private System.Windows.Forms.Label AmmoLabel;
         private System.Windows.Forms.Label Difficulty;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem newGameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showHighscoresToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showHighscoresToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem submitHighscoreToolStripMenuItem;
     }
 }
 

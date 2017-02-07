@@ -47,13 +47,15 @@ namespace WindowsFormsApplication3
             InitializeComponent();
             timer1.Enabled = true;
             setMinMax();
+            ResetScoreAndAmmo();
+            menuStrip1.BringToFront();
         }
 
         int startPosX, startPosY, 
             curPosX, curPosY, 
             uPosX, uPosY, 
             uSpeed, UMinSpeed, UMaxSpeed,
-            torpSpeed, ammunition = 10, 
+            torpSpeed, ammunition, 
             score, diffLevel;
 
         Point startPos, relativePoint;
@@ -115,6 +117,27 @@ namespace WindowsFormsApplication3
                 timer1.Stop();
                 Console.WriteLine("You lost! " + ammunition + " ammo, " + score + " score");
             }
+        }
+
+        private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewGame();
+        }
+
+        private void NewGame()
+        {
+            timer1.Stop();
+                ResetScoreAndAmmo();
+                setMinMax();
+                ResetAllComp();
+                LabelUpdates();
+            timer1.Start();
+        }
+
+        private void ResetScoreAndAmmo()
+        {
+            ammunition = 10;
+            score = 0;
         }
 
         private bool lossCondition()
@@ -236,14 +259,13 @@ namespace WindowsFormsApplication3
             }
         }
 
-        private void setMinMax(int min, int max)
+        private void setMinMax(int _min, int _max)
         { 
-            if (max > 10)
+            if (_max > 10 && _min > 0)
+            {
                 UMaxSpeed++;
-            if (min > 0)
                 UMinSpeed++;
-            
-            // eller 'UMinSpeed += 1;' eller 'UMinSpeed++';
+            }                
         }
 
         private void setMinMax()
@@ -252,30 +274,31 @@ namespace WindowsFormsApplication3
             UMaxSpeed = 11;
         }
 
-        class Enemy
-        {
-            Enemy(int _MinSpeed, int _MaxSpeed, String _Type)
-            {
-                Random r = new Random();
-                int _RightLeft = r.Next(0,2);
 
-                Spawn(_RightLeft);
-            }
+        //class Enemy
+        //{
+        //    Enemy(int _MinSpeed, int _MaxSpeed, String _Type)
+        //    {
+        //        Random r = new Random();
+        //        int _RightLeft = r.Next(0,2);
 
-            private void Spawn(int _RightLeft)
-            {
-                if (_RightLeft == 1)
-                {
-                    Console.WriteLine("Left side spawn.");
-                    PictureBox enemyPicture = new PictureBox(); // Ønsker å ha ny Form1.Uboat
-                }
-                else
-                {
-                    Console.WriteLine("Right side spawn.");
-                    PictureBox enemyPicture = new PictureBox();
-                }
-            }
-        }
+        //        Spawn(_RightLeft);
+        //    }
+
+        //    private void Spawn(int _RightLeft)
+        //    {
+        //        if (_RightLeft == 1)
+        //        {
+        //            Console.WriteLine("Left side spawn.");
+        //            PictureBox enemyPicture = new PictureBox(); // Ønsker å ha ny Form1.Uboat
+        //        }
+        //        else
+        //        {
+        //            Console.WriteLine("Right side spawn.");
+        //            PictureBox enemyPicture = new PictureBox();
+        //        }
+        //    }
+        //}
 
         private void MoveMissile()
         {

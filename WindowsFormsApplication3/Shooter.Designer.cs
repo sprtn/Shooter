@@ -46,10 +46,12 @@
             this.showHighscoresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showHighscoresToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.submitHighscoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.BigBoat = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BigBoat)).BeginInit();
             this.SuspendLayout();
             // 
             // Torpedo
@@ -93,7 +95,7 @@
             this.Uboat.BackColor = System.Drawing.Color.Transparent;
             this.Uboat.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("Uboat.BackgroundImage")));
             this.Uboat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Uboat.Location = new System.Drawing.Point(866, 125);
+            this.Uboat.Location = new System.Drawing.Point(750, 140);
             this.Uboat.Name = "Uboat";
             this.Uboat.Size = new System.Drawing.Size(149, 67);
             this.Uboat.TabIndex = 2;
@@ -202,6 +204,20 @@
             this.submitHighscoreToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.submitHighscoreToolStripMenuItem.Text = "Submit Current Score";
             // 
+            // BigBoat
+            // 
+            this.BigBoat.AccessibleDescription = "Uboat object";
+            this.BigBoat.AccessibleName = "Uboat";
+            this.BigBoat.BackColor = System.Drawing.Color.Transparent;
+            this.BigBoat.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("BigBoat.BackgroundImage")));
+            this.BigBoat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BigBoat.Location = new System.Drawing.Point(96, 124);
+            this.BigBoat.Name = "BigBoat";
+            this.BigBoat.Size = new System.Drawing.Size(305, 118);
+            this.BigBoat.TabIndex = 11;
+            this.BigBoat.TabStop = false;
+            this.BigBoat.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -209,6 +225,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1261, 627);
+            this.Controls.Add(this.BigBoat);
             this.Controls.Add(this.Difficulty);
             this.Controls.Add(this.AmmoLabel);
             this.Controls.Add(this.ScoreLabel);
@@ -223,7 +240,6 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
-            this.Click += new System.EventHandler(this.Form1_Click);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).EndInit();
@@ -231,6 +247,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BigBoat)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -254,6 +271,7 @@
         private System.Windows.Forms.ToolStripMenuItem showHighscoresToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showHighscoresToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem submitHighscoreToolStripMenuItem;
+        private System.Windows.Forms.PictureBox BigBoat;
     }
 }
 

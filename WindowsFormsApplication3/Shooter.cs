@@ -64,7 +64,12 @@ namespace WindowsFormsApplication3
         Point ClickedPoint;
 
         private bool ShotsFired = false;
-        private bool UboatIsHit;
+        private bool UboatIsHit, BigBoatIsHit;
+        private bool LaunchBigBoat;
+        private int BigSpeed;
+        private int BigHP;
+        private int TorpedoDamage = 1;
+        private int UboatHP;
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
@@ -136,14 +141,23 @@ namespace WindowsFormsApplication3
                 return false;
         }
 
+        string BossLevelString ()
+        {
+            if (LaunchBigBoat)
+                return "Boss Level";
+            else
+                return "No Boss";
+        }
+
+
         private void UpdateLabelValues()
         {
             IsClicked.Text = ShotsFired.ToString();
-            // TorpXY.Text = CurPosX + ", " + CurPosY;
             UboatXY.Text = Uboat.Location.X + ", " + Uboat.Location.Y;
             ScoreLabel.Text = "Score:" + Score;
             AmmoLabel.Text = "Ammo: " + Ammunition;
             Difficulty.Text = "Level " + DiffModifier / 4;
+            BossLevel.Text = BossLevelString();
         }
 
         private void SetGUI()
@@ -168,28 +182,57 @@ namespace WindowsFormsApplication3
             CurrentSpeed.Location = new Point(inset - CurrentSpeed.Width, ClientRectangle.Height - inset);
             IsClicked.Location = new Point(inset - IsClicked.Width, ClientRectangle.Height - inset / 2);
             Difficulty.Location = new Point(ClientRectangle.Width - inset, inset / 2);
+            BossLevel.Location = new Point(ClientRectangle.Width - inset, inset);
         }
 
         private void CollisionControl()
         {
-            if (Torpedo.Bounds.IntersectsWith(Uboat.Bounds))
+            if (Torpedo.Bounds.IntersectsWith(Uboat.Bounds) && Uboat.Visible == true)
             {
-                UboatIsHit = true;
-                DiffModifier++;
-                Score += (USpeed + DiffModifier);
-                Uboat.Visible = false;
-                MissileReset();
-
-                if (DiffModifier % 4 == 0 && DiffModifier != 0)
+                UboatHP -= TorpedoDamage;
+                if (UboatHP >= 0)
                 {
-                    SetMinimumAndMaxSpeed(true);
-                    Ammunition += 5;
+                    UboatIsHit = true;
+                    DiffModifier++;
+                    Score += (USpeed + DiffModifier);
+                    Uboat.Visible = false;
+                    MissileReset();
+
+                    if (DiffModifier % 4 == 0 && DiffModifier != 0)
+                    {
+                        Ammunition += 1;
+                    }
+                    if (DiffModifier % 10 == 0 && DiffModifier != 0)
+                    {
+                        LaunchBigBoat = true;
+                        SetMinimumAndMaxSpeed(true);
+                    }
+                }
+                
+            }
+            if (Torpedo.Bounds.IntersectsWith(BigBoat.Bounds) && BigBoat.Visible == true)
+            {
+                BigHP -= TorpedoDamage;
+                Ammunition += 3;
+
+                if (BigHP <= 0)
+                {
+                    LaunchBigBoat = false;
+                    BigBoatIsHit = true;
+                    BigBoat.Visible = false;
+                    MissileReset();
+                    Score += ((BigSpeed + DiffModifier) * 5);
+                } else
+                {
+                    MissileReset();
                 }
             }
         }
 
         private void ResetAllComp()
         {
+            if (BigBoatIsHit)
+                BigBoat.Visible = false;
             if (UboatIsHit)
                 Uboat.Visible = false;
             MissileReset();
@@ -205,33 +248,68 @@ namespace WindowsFormsApplication3
 
         private void EnemyControl()
         {
+            if (LaunchBigBoat)
+                CreateEnemy("Big");
             if (Uboat.Visible != true)
-                CreateEnemy();
+                CreateEnemy("Small");
             else
                 MoveEnemy();
         }
 
         private void MoveEnemy()
         {
-            Uboat.Location = new Point(UPosX += USpeed, UPosY); // Moves our Uboat along the X axis by USpeed. The Y remains constant.
-            if (UPosX >= ClientRectangle.Width) // If the leftmost x coordinate of our Uboat hitbox passes outside the right side of the screen
-                Uboat.Visible = false;          // Set visibility to false. Redirects to CreateEnemy() in the EnemyControl, which sets this Uboat up with new values.
+            if (Uboat.Visible == true)
+            {
+                Uboat.Location = new Point(UPosX += USpeed, UPosY); // Moves our Uboat along the X axis by USpeed. The Y remains constant.
+                if (UPosX >= ClientRectangle.Width)     // If the leftmost x coordinate of our Uboat hitbox passes outside the right side of the screen
+                { 
+                    Uboat.Visible = false;              // Set visibility to false. Redirects to CreateEnemy() in the EnemyControl, which sets this Uboat up with new values.
+                    Score -= (USpeed + DiffModifier);   // If the _Uboat reaches the end, you lose it's value in score!
+                }
+            }
+            if (BigBoat.Visible == true)
+            {
+                BigBoat.Location = new Point(BigBoat.Location.X + BigSpeed, BigBoat.Location.Y);   // Moves our BigBoat along the X axis by USpeed. The Y remains constant.
+                if (BigBoat.Location.X >= ClientRectangle.Width)        // If the leftmost x coordinate of our Uboat hitbox passes outside the right side of the screen
+                {
+                    LaunchBigBoat = false;
+                    BigBoat.Visible = false;                            // Set visibility to false. Redirects to CreateEnemy() in the EnemyControl, which sets this Uboat up with new values.
+                    DiffModifier++;
+                }
+            }
+            
         }
 
-        private void CreateEnemy()
+        private void CreateEnemy(string EnemyType)
         {
             Random r = new Random(); 
             // Only place we use Random in the entire program.
 
-            if (Uboat.Visible == false)
-            {    
-                UPosX = -Uboat.Width;                           // Makes the Uboat picturebox start just outside form1
-                UPosY = 10 + r.Next(10, 150);                   // Must be a rand
-                USpeed = r.Next(UboatMinSpeed, UboatMaxSpeed);  // Must be a rand
-                CurrentSpeed.Text = USpeed.ToString();          // Showing the speed of the Uboat, mainly used for debugging.
-                Uboat.Visible = true;                           // Sets visibility (initiates movement through the EnemyControl function)
-                Uboat.Location = new Point(UPosX, UPosY);       // Sets start location
+            if (EnemyType == "Small")
+            {
+                if (Uboat.Visible == false)
+                {
+                    UboatHP = 1;
+                    UPosX = -Uboat.Width;                           // Makes the Uboat picturebox start just outside form1
+                    UPosY = 10 + r.Next(10, 150);                   // Must be a rand
+                    USpeed = r.Next(UboatMinSpeed, UboatMaxSpeed);  // Must be a rand
+                    CurrentSpeed.Text = USpeed.ToString();          // Showing the speed of the Uboat, mainly used for debugging.
+                    Uboat.Visible = true;                           // Sets visibility (initiates movement through the EnemyControl function)
+                    Uboat.Location = new Point(UPosX, UPosY);       // Sets start location
+                }
             }
+            if (EnemyType == "Big")
+            {
+                if (BigBoat.Visible == false)
+                {
+                    BigHP = 5;
+                    BigSpeed = r.Next(UboatMinSpeed, UboatMaxSpeed);
+                    BigBoat.Location = new Point(-BigBoat.Width, r.Next(10 + BigBoat.Height, 750));
+                    BigBoat.Visible = true;
+                }
+                
+            }
+            
         }
 
         private void SetMinimumAndMaxSpeed(bool Set)
@@ -281,23 +359,22 @@ namespace WindowsFormsApplication3
     N.Make Enemy class
         n.Randomize right/left direction of attack
 
-    Make Boss
+    Make Boss / Bonus Enemy
         F.Create a new picturebox 
             F.Similar to the Uboat picturebox -- Copy called "BigBoat"
-                -- time > timeNeeded ? Make BigBoat and Uboat inherit from a class and thus shorten the code : Copy/Paste code from the Uboat
 
-    Enemies/Invaders
+    F.Enemies/Invaders
         F.Need to add invaders
             F.Pictures
             F.Moving enemies
             F.Random speeds
             F.Random heights
             N.Random quantities --  cannot instansiate new Uboat objects, 
-                                    would need to rework the entire thing, 
+                                    would need to rework the entire setup, 
                                     or simply have multiple Uboats with 
                                     spawn timers or the like, but meh.
-        Boss invader
-            Implement hp system (?)
+        F.Boss invader
+            F.Implement hp system (?)
     
     Score
         
@@ -310,7 +387,7 @@ namespace WindowsFormsApplication3
         Add new highscores instead of overwriting
         F.Save to .xml -- This is currently done, but in a seperate file so as to not much up this project.
         Show highscores
-        N/f.Make the player lose score when a uboat passes
+        F.Make the player lose score when a uboat passes
             
     F.Missiles
         F.Missile no longer work as they should

@@ -47,6 +47,7 @@
             this.showHighscoresToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.submitHighscoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BigBoat = new System.Windows.Forms.PictureBox();
+            this.BossLevel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
@@ -213,10 +214,19 @@
             this.BigBoat.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.BigBoat.Location = new System.Drawing.Point(96, 124);
             this.BigBoat.Name = "BigBoat";
-            this.BigBoat.Size = new System.Drawing.Size(305, 118);
+            this.BigBoat.Size = new System.Drawing.Size(292, 101);
             this.BigBoat.TabIndex = 11;
             this.BigBoat.TabStop = false;
             this.BigBoat.Visible = false;
+            // 
+            // BossLevel
+            // 
+            this.BossLevel.AutoSize = true;
+            this.BossLevel.Location = new System.Drawing.Point(1215, 34);
+            this.BossLevel.Name = "BossLevel";
+            this.BossLevel.Size = new System.Drawing.Size(35, 13);
+            this.BossLevel.TabIndex = 12;
+            this.BossLevel.Text = "label1";
             // 
             // Form1
             // 
@@ -225,6 +235,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1261, 627);
+            this.Controls.Add(this.BossLevel);
             this.Controls.Add(this.BigBoat);
             this.Controls.Add(this.Difficulty);
             this.Controls.Add(this.AmmoLabel);
@@ -272,6 +283,7 @@
         private System.Windows.Forms.ToolStripMenuItem showHighscoresToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem submitHighscoreToolStripMenuItem;
         private System.Windows.Forms.PictureBox BigBoat;
+        private System.Windows.Forms.Label BossLevel;
     }
 }
 

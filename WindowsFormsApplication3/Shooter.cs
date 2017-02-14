@@ -124,6 +124,7 @@ namespace WindowsFormsApplication3
                 SetMinimumAndMaxSpeed(false);
                 ResetAllComp();
                 UpdateLabelValues();
+                DiffModifier = 0;
             timer1.Start();
         }
 
@@ -396,3 +397,4 @@ namespace WindowsFormsApplication3
         F.Can launch several missiles by clicking several times.
         F.The objectives dont all dissappear until the last click goes through.
  */
+ 

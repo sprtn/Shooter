@@ -198,12 +198,14 @@
             this.showHighscoresToolStripMenuItem1.Name = "showHighscoresToolStripMenuItem1";
             this.showHighscoresToolStripMenuItem1.Size = new System.Drawing.Size(187, 22);
             this.showHighscoresToolStripMenuItem1.Text = "Show Highscores";
+            this.showHighscoresToolStripMenuItem1.Click += new System.EventHandler(this.showHighscoresToolStripMenuItem1_Click);
             // 
             // submitHighscoreToolStripMenuItem
             // 
             this.submitHighscoreToolStripMenuItem.Name = "submitHighscoreToolStripMenuItem";
             this.submitHighscoreToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.submitHighscoreToolStripMenuItem.Text = "Submit Current Score";
+            this.submitHighscoreToolStripMenuItem.Click += new System.EventHandler(this.submitHighscoreToolStripMenuItem_Click);
             // 
             // BigBoat
             // 

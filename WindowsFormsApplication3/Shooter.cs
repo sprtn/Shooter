@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace WindowsFormsApplication3
 {
@@ -41,6 +43,17 @@ namespace WindowsFormsApplication3
 
     public partial class Form1 : Form
     {
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000;  // Turn on WS_EX_COMPOSITED
+                return cp;
+            }
+        }
+
         public Form1()
         {
             // Let's set the form to be maximized and without borders for a fullscreen app.
@@ -63,13 +76,13 @@ namespace WindowsFormsApplication3
 
         Point ClickedPoint;
 
-        private bool ShotsFired = false;
-        private bool UboatIsHit, BigBoatIsHit;
-        private bool LaunchBigBoat;
-        private int BigSpeed;
-        private int BigHP;
-        private int TorpedoDamage = 1;
-        private int UboatHP;
+        private bool
+            ShotsFired = false,
+            UboatIsHit,
+            LaunchBigBoat, BigBoatIsHit;
+
+        private int TorpedoDamage = 1,
+            UboatHP, BigHP, BigSpeed;
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
@@ -117,6 +130,8 @@ namespace WindowsFormsApplication3
             NewGame();
         }
 
+        // Game management, loss condition, start values
+
         private void NewGame()
         {
             timer1.Stop();
@@ -129,7 +144,7 @@ namespace WindowsFormsApplication3
 
         private void SetScoreAndAmmo()
         {
-            Ammunition = 10;
+            Ammunition = 15;
             Score = 0;
         }
 
@@ -140,6 +155,8 @@ namespace WindowsFormsApplication3
             else
                 return false;
         }
+
+        // Labels and GUI
 
         string BossLevelString ()
         {
@@ -162,13 +179,11 @@ namespace WindowsFormsApplication3
 
         private void SetGUI()
         {
-            // Set the background picture(s) to have the same bounds, 
-            // and for the foremost of the two to be visible.
             if (pictureBox2.Bounds != ClientRectangle)
                 pictureBox2.Bounds = ClientRectangle;
             if (pictureBox2.Visible == false)
                 pictureBox2.Visible = true;
-            // Placing the labels where we want them on the screen.
+            // Place the labels where we want them on the screen.
             PlaceLabels(50); // The parameter is the inset in pixels.
         }
 
@@ -184,6 +199,8 @@ namespace WindowsFormsApplication3
             Difficulty.Location = new Point(ClientRectangle.Width - inset, inset / 2);
             BossLevel.Location = new Point(ClientRectangle.Width - inset, inset);
         }
+
+        // Collision control, save, difficulty progression etc, BigBoat launching etc.
 
         private void CollisionControl()
         {
@@ -209,9 +226,7 @@ namespace WindowsFormsApplication3
                     }
                 }
                 
-            }
-            if (Torpedo.Bounds.IntersectsWith(BigBoat.Bounds) && BigBoat.Visible == true)
-            {
+            } else if (Torpedo.Bounds.IntersectsWith(BigBoat.Bounds) && BigBoat.Visible == true) {
                 BigHP -= TorpedoDamage;
                 Ammunition += 3;
 
@@ -238,13 +253,7 @@ namespace WindowsFormsApplication3
             MissileReset();
         }
 
-        private void MissileControl()
-        {
-            if (ShotsFired == true)
-                MoveMissile();
-            else
-                MissileReset();
-        }
+        // Enemy movement, creation and management.
 
         private void EnemyControl()
         {
@@ -312,6 +321,8 @@ namespace WindowsFormsApplication3
             
         }
 
+        // Speed modification
+
         private void SetMinimumAndMaxSpeed(bool Set)
         { 
             if (UboatMinSpeed > 0 && UboatMaxSpeed > 10 && Set)
@@ -324,6 +335,16 @@ namespace WindowsFormsApplication3
                 UboatMinSpeed = 1;
                 UboatMaxSpeed = 11;
             }
+        }
+
+        // Missile management
+
+        private void MissileControl()
+        {
+            if (ShotsFired == true)
+                MoveMissile();
+            else
+                MissileReset();
         }
 
         private void MoveMissile()
@@ -344,6 +365,74 @@ namespace WindowsFormsApplication3
             Torpedo.Visible = false;
             ShotsFired = false;
             Torpedo.Location = new Point(0, ClientRectangle.Height);
+        }
+
+        // Highscore stuffs:
+        private void submitHighscoreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            XMLmanager("Vegard", Score, "HighScores.xml");
+        }
+
+        public static void XMLmanager(string _player, int _score, string file)
+        {
+            try
+            {
+                SaveToFile(_player, _score, file);
+            }
+            catch
+            {
+                CreateNewXML(_player, _score, file);
+                Console.WriteLine("Error caught. Unable to locate Highscores.xml, so we created a new XML file.");
+            }
+            if (File.Exists(file)) {
+                SortXMLByScore(file);
+            }
+        }
+
+
+        // Sorts the Highscores in ascending order.
+        private static void SortXMLByScore(string file)
+        {
+            XDocument doc = XDocument.Load(file);
+            var SortScores = doc.Element("Highscores").Elements("Score").OrderByDescending(Score => (int)Score.Attribute("Points"));
+            doc = new XDocument(new XElement("Highscores", SortScores));
+            doc.Save(file);
+        }
+
+        // Creates a new XML document in our wanted format
+        private static void CreateNewXML(string _player, int _score, string file)
+        {
+            try
+            {
+                Console.WriteLine("Forsøker å lagre informasjon i XML-format.");
+                XDocument doc = new XDocument(
+                                    new XElement("Highscores"));
+                Console.WriteLine("Prøver å lagre til " + file);
+                doc.Save(file);
+                Console.WriteLine("Dokumentet ble lagret!");
+                SaveToFile(_player, _score, file);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("CreateNewXML.Feilmelding: \"" + e + "\"");
+            }
+        }
+
+        // Saves current score and the name input into the XML document
+        private static void SaveToFile(string _player, int _score, string file)
+        {
+            XDocument doc = XDocument.Load(file);
+            var newScore = new XElement("Score",
+                new XAttribute("Player", _player),
+                new XAttribute("Points", _score)
+            );
+            doc.Element("Highscores").Add(newScore);
+            doc.Save(file);
+        }
+
+        private void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
@@ -375,19 +464,19 @@ namespace WindowsFormsApplication3
                                     spawn timers or the like, but meh.
         F.Boss invader
             F.Implement hp system (?)
+            New Game doesn't reset the DiffModifier!
     
-    Score
-        
+    F.Score
+        F.Make the player lose score when a uboat passes
+        F.Add highscore saving 
+        F.Add new highscores instead of overwriting
+        F.Save to .xml -- This is currently done, but in a seperate file so as to not much up this project.
+        Show highscores
+        Open visual Menu for Highscore save within the Client
 
     Add loss/game over condition
         F.Add condition
         F.Add effect
-        Open visual Menu for Highscore save within the Client
-        F.Add highscore saving 
-        Add new highscores instead of overwriting
-        F.Save to .xml -- This is currently done, but in a seperate file so as to not much up this project.
-        Show highscores
-        F.Make the player lose score when a uboat passes
             
     F.Missiles
         F.Missile no longer work as they should

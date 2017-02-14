@@ -7,18 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Linq;
 
 namespace WindowsFormsApplication3
 {
 
     /// <summary>
-    /// One of the major things in this project is, for me, to show my grasp of all the concepts required to make this game.
-    /// As per now (01.02.17), I feel like this is not shown, as I do not implement different classes for the enemies, torpedo's
-    /// and such.
+    /// Disclaimer: I do not feel like this project shows my current potential. Half-way through the project I knew 
+    /// I should have started over, but I didn't. Therefore there have been a whole lot of bad solutions and bad
+    /// structure. I have, however, learned a lot during this project.
     /// 
-    /// Future implementation need to implement, before delivery:
+    /// Wanted implementation / original idea:
     /// Enemy Class
     ///     Uboat class, which inherits values from Enemy class.
     ///     Boss class, which inherits values from Enemy Class.
@@ -27,14 +25,15 @@ namespace WindowsFormsApplication3
     /// The Form is resizable, and resizes when changes are made. All the elements should be resize-friendly, 
     /// except the Enemy placement on the Y axis. I think I can fix this quite easily with making the uPosY a range between
     /// object.height and ClientRectangle.Height - 25%(?) of ClientRectangle.Height. This means that the top 75% of the screen,
-    /// -object height, can spawn enemies.
+    /// -object height, can spawn enemies. Speed and enemy sizes are not resize-friendly, so the bigger your resolution the easier
+    /// the game is, this is counterweighted by the extra travel length for the torp.
     /// 
-    /// Also need a proper function for whether the elements spawn left or right, which has been started on this session,
-    /// but not implemented properly, mainly because I have focused on other implementations, bugfixes and other stuff that
-    /// has annoyed me for quite some time.
+    /// Also wanted to add a proper function for whether the elements spawn left or right, which has been started on but abandoned
+    /// mainly because I have focused on other implementations, bugfixes and other stuff that has annoyed me, and that are vital for passing.
     /// 
-    /// The entire project needs a full re-write from the most basic of functions (missile movement, enemy movement) to
-    /// the more "advanced" (spawning enemies, ticks etc.)
+    /// The entire project would need a full re-write from the most basic of functions (missile movement, enemy movement) to
+    /// the more "advanced" (spawning enemies, ticks etc.) If I were to do it again, I would have done a more OOP approach, pref with 
+    /// more self-aware objects, asynchronous functions and other cool stuff I've learned the past months.
     /// 
     /// I also need to optimize the program further, since I see that it takes a bit more RAM than I would expect 
     /// for such a small project.
@@ -44,32 +43,41 @@ namespace WindowsFormsApplication3
     {
         public Form1()
         {
-            FormBorderStyle = FormBorderStyle.None;
-            WindowState = FormWindowState.Maximized;
-            InitializeComponent();
-            timer1.Enabled = true;
-            setMinMax();
+            // Let's set the form to be maximized and without borders for a fullscreen app.
+            FormBorderStyle = FormBorderStyle.None;  // <- Removes the borders.
+            WindowState = FormWindowState.Maximized; // <- This function automatically calls SetGUI, since the size changes. Neat!
+
+            // Initialize components, bring the top menu to the front and start the game instantly (Timer).
+            InitializeComponent();                  // Built-in function that initializes the Shooter.cs[Design]-elements we added etc.
+            menuStrip1.BringToFront();              // <- Brings the added menu strip to the front.
+            timer1.Enabled = true;                  // Starts timer1.
+
+            // Sets base values ready the game.
+            SetMinimumAndMaxSpeed(false);           // Sets the speed values needed for launching our enemies.
+            SetScoreAndAmmo();                      // Self-explanatory title.
         }
 
-        int startPosX, startPosY,
-            curPosX, curPosY,
-            uPosX, uPosY,
-            uSpeed, UMinSpeed, UMaxSpeed,
-            torpSpeed, ammunition = 10,
-            score, diffLevel;
+        int UPosX, UPosY, 
+            UboatMinSpeed, UboatMaxSpeed, USpeed,
+            TorpSpeed, Ammunition, Score, DiffModifier;
 
-        Point startPos, relativePoint;
+        Point ClickedPoint;
 
-        private bool clicked = false;
-        private bool impact;
+        private bool ShotsFired = false;
+        private bool UboatIsHit, BigBoatIsHit;
+        private bool LaunchBigBoat;
+        private int BigSpeed;
+        private int BigHP;
+        private int TorpedoDamage = 1;
+        private int UboatHP;
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            if (clicked == false && ammunition > 0)
+            if (ShotsFired == false && Ammunition > 0)
             {
-                setTorpedoVariables();
-                ammunition--;
-                clicked = true;
+                GetTargetAndFire();
+                Ammunition--;
+                ShotsFired = true;
             }
         }
 
@@ -84,26 +92,11 @@ namespace WindowsFormsApplication3
             SetGUI();
         }
 
-        private void Form1_Click(object sender, EventArgs e)
+        private void GetTargetAndFire()
         {
-            Console.WriteLine("Wrong click recorded");
-        }
-
-        private void setTorpedoVariables()
-        {
-            relativePoint = PointToClient(Cursor.Position);
-            torpSpeed = 30;
-
-            startPosX = ClientRectangle.Width / 2;
-            startPosY = ClientRectangle.Height;
-
-            curPosX = startPosX;
-            curPosY = startPosY;
-            startPos = new Point(startPosX, startPosY);
-            clicked = true;
-
-            Torpedo.Location = startPos;
-            Console.WriteLine(startPos);
+            ClickedPoint = PointToClient(Cursor.Position);
+            TorpSpeed = 25;
+            ShotsFired = true;
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -111,40 +104,77 @@ namespace WindowsFormsApplication3
             EnemyControl();
             MissileControl();
             CollisionControl();
-            LabelUpdates();
+            UpdateLabelValues();
             if (lossCondition())
             {
                 timer1.Stop();
-                Console.WriteLine("You lost! " + ammunition + " ammo, " + score + " score");
+                Console.WriteLine("You lost! " + Ammunition + " ammo, " + Score + " score");
             }
+        }
+
+        private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            NewGame();
+        }
+
+        private void NewGame()
+        {
+            timer1.Stop();
+                SetScoreAndAmmo();
+                SetMinimumAndMaxSpeed(false);
+                ResetAllComp();
+                UpdateLabelValues();
+            timer1.Start();
+        }
+
+        private void SetScoreAndAmmo()
+        {
+            Ammunition = 10;
+            Score = 0;
         }
 
         private bool lossCondition()
         {
-            if (ammunition == 0 && clicked == false)
+            if (Ammunition == 0 && ShotsFired == false)
                 return true;
             else
                 return false;
         }
 
-        private void LabelUpdates()
+        string BossLevelString ()
         {
-            IsClicked.Text = clicked.ToString();
-            TorpXY.Text = curPosX + ", " + curPosY;
+            if (LaunchBigBoat)
+                return "Boss Level";
+            else
+                return "No Boss";
+        }
+
+
+        private void UpdateLabelValues()
+        {
+            IsClicked.Text = ShotsFired.ToString();
             UboatXY.Text = Uboat.Location.X + ", " + Uboat.Location.Y;
-            ScoreLabel.Text = "Score:" + score;
-            AmmoLabel.Text = "Ammo: " + ammunition;
-            Difficulty.Text = "Level " + diffLevel / 4;
+            ScoreLabel.Text = "Score:" + Score;
+            AmmoLabel.Text = "Ammo: " + Ammunition;
+            Difficulty.Text = "Level " + DiffModifier / 4;
+            BossLevel.Text = BossLevelString();
         }
 
         private void SetGUI()
         {
-            int inset = 50;
+            // Set the background picture(s) to have the same bounds, 
+            // and for the foremost of the two to be visible.
             if (pictureBox2.Bounds != ClientRectangle)
                 pictureBox2.Bounds = ClientRectangle;
             if (pictureBox2.Visible == false)
                 pictureBox2.Visible = true;
+            // Placing the labels where we want them on the screen.
+            PlaceLabels(50); // The parameter is the inset in pixels.
+        }
 
+        private void PlaceLabels(int inset)
+        {
+            // Placing the labels where we want them on the screen.
             UboatXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset);
             TorpXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset / 2);
             ScoreLabel.Location = new Point(inset - ScoreLabel.Width, inset / 2);
@@ -152,40 +182,65 @@ namespace WindowsFormsApplication3
             CurrentSpeed.Location = new Point(inset - CurrentSpeed.Width, ClientRectangle.Height - inset);
             IsClicked.Location = new Point(inset - IsClicked.Width, ClientRectangle.Height - inset / 2);
             Difficulty.Location = new Point(ClientRectangle.Width - inset, inset / 2);
+            BossLevel.Location = new Point(ClientRectangle.Width - inset, inset);
         }
 
         private void CollisionControl()
         {
-            if (Torpedo.Bounds.IntersectsWith(Uboat.Bounds))
+            if (Torpedo.Bounds.IntersectsWith(Uboat.Bounds) && Uboat.Visible == true)
             {
-                impact = true;
-                diffLevel++;
-                score += (10 + uSpeed);
-                ammunition += 1;
-                Uboat.Visible = false;
-                MissileReset();
+                UboatHP -= TorpedoDamage;
+                if (UboatHP >= 0)
+                {
+                    UboatIsHit = true;
+                    DiffModifier++;
+                    Score += (USpeed + DiffModifier);
+                    Uboat.Visible = false;
+                    MissileReset();
 
-                if (diffLevel % 4 == 0 && diffLevel != 0)
-                {
-                    setMinMax(UMinSpeed, UMaxSpeed);
+                    if (DiffModifier % 4 == 0 && DiffModifier != 0)
+                    {
+                        Ammunition += 1;
+                    }
+                    if (DiffModifier % 10 == 0 && DiffModifier != 0)
+                    {
+                        LaunchBigBoat = true;
+                        SetMinimumAndMaxSpeed(true);
+                    }
                 }
-                else if (UMinSpeed == 0 || UMaxSpeed == 0)
+                
+            }
+            if (Torpedo.Bounds.IntersectsWith(BigBoat.Bounds) && BigBoat.Visible == true)
+            {
+                BigHP -= TorpedoDamage;
+                Ammunition += 3;
+
+                if (BigHP <= 0)
                 {
-                    setMinMax();
+                    LaunchBigBoat = false;
+                    BigBoatIsHit = true;
+                    BigBoat.Visible = false;
+                    MissileReset();
+                    Score += ((BigSpeed + DiffModifier) * 5);
+                } else
+                {
+                    MissileReset();
                 }
             }
         }
 
         private void ResetAllComp()
         {
-            if (impact)
+            if (BigBoatIsHit)
+                BigBoat.Visible = false;
+            if (UboatIsHit)
                 Uboat.Visible = false;
             MissileReset();
         }
 
         private void MissileControl()
         {
-            if (clicked == true)
+            if (ShotsFired == true)
                 MoveMissile();
             else
                 MissileReset();
@@ -193,99 +248,92 @@ namespace WindowsFormsApplication3
 
         private void EnemyControl()
         {
-            if (Uboat.Visible == false)
-                CreateEnemy();
-            if (Uboat.Visible == true)
+            if (LaunchBigBoat)
+                CreateEnemy("Big");
+            if (Uboat.Visible != true)
+                CreateEnemy("Small");
+            else
                 MoveEnemy();
         }
 
         private void MoveEnemy()
         {
-            uPosX += uSpeed;
-            Uboat.Location = new Point(uPosX, uPosY);
-            if (uPosX >= ClientRectangle.Width)
-                Uboat.Visible = false;
-        }
-
-        private void CreateEnemy()
-        {
-            if (Uboat.Visible == false)
+            if (Uboat.Visible == true)
             {
-                Random r = new Random();
-                int LeftRight = r.Next(100);
-
-                uPosY = 10 + r.Next(10, 150); // Must be a rand
-                uSpeed = r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
-                Console.WriteLine(LeftRight);
-
-                if (LeftRight >= 50)
-                {
-                    Console.WriteLine("Left Spawn");
-                    uPosX = -Uboat.Width;
-                    uSpeed = r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
+                Uboat.Location = new Point(UPosX += USpeed, UPosY); // Moves our Uboat along the X axis by USpeed. The Y remains constant.
+                if (UPosX >= ClientRectangle.Width)     // If the leftmost x coordinate of our Uboat hitbox passes outside the right side of the screen
+                { 
+                    Uboat.Visible = false;              // Set visibility to false. Redirects to CreateEnemy() in the EnemyControl, which sets this Uboat up with new values.
+                    Score -= (USpeed + DiffModifier);   // If the _Uboat reaches the end, you lose it's value in score!
                 }
-                else if (LeftRight < 50)
-                {
-                    Console.WriteLine("Right Spawn");
-                    uPosX = pictureBox2.Width + Uboat.Width;
-                    uSpeed = -r.Next(UMinSpeed, UMaxSpeed); // Must be a rand
-                }
-
-                CurrentSpeed.Text = uSpeed.ToString();
-
-                Uboat.Visible = true;
-                Uboat.Location = new Point(uPosX, uPosY);
             }
-        }
-
-        private void setMinMax(int min, int max)
-        {
-            if (max > 10)
-                UMaxSpeed++;
-            if (min > 0)
-                UMinSpeed++;
-
-            // eller 'UMinSpeed += 1;' eller 'UMinSpeed++';
-        }
-
-        private void setMinMax()
-        {
-            UMinSpeed = 1;
-            UMaxSpeed = 11;
-        }
-
-        class Enemy
-        {
-            Enemy(int _MinSpeed, int _MaxSpeed, String _Type)
+            if (BigBoat.Visible == true)
             {
-                Random r = new Random();
-                int _RightLeft = r.Next(0, 2);
-
-                Spawn(_RightLeft);
+                BigBoat.Location = new Point(BigBoat.Location.X + BigSpeed, BigBoat.Location.Y);   // Moves our BigBoat along the X axis by USpeed. The Y remains constant.
+                if (BigBoat.Location.X >= ClientRectangle.Width)        // If the leftmost x coordinate of our Uboat hitbox passes outside the right side of the screen
+                {
+                    LaunchBigBoat = false;
+                    BigBoat.Visible = false;                            // Set visibility to false. Redirects to CreateEnemy() in the EnemyControl, which sets this Uboat up with new values.
+                    DiffModifier++;
+                }
             }
+            
+        }
 
-            private void Spawn(int _RightLeft)
+        private void CreateEnemy(string EnemyType)
+        {
+            Random r = new Random(); 
+            // Only place we use Random in the entire program.
+
+            if (EnemyType == "Small")
             {
-                if (_RightLeft == 1)
+                if (Uboat.Visible == false)
                 {
-                    Console.WriteLine("Left side spawn.");
-                    PictureBox enemyPicture = new PictureBox(); // Ønsker å ha ny Form1.Uboat
+                    UboatHP = 1;
+                    UPosX = -Uboat.Width;                           // Makes the Uboat picturebox start just outside form1
+                    UPosY = 10 + r.Next(10, 150);                   // Must be a rand
+                    USpeed = r.Next(UboatMinSpeed, UboatMaxSpeed);  // Must be a rand
+                    CurrentSpeed.Text = USpeed.ToString();          // Showing the speed of the Uboat, mainly used for debugging.
+                    Uboat.Visible = true;                           // Sets visibility (initiates movement through the EnemyControl function)
+                    Uboat.Location = new Point(UPosX, UPosY);       // Sets start location
                 }
-                else
+            }
+            if (EnemyType == "Big")
+            {
+                if (BigBoat.Visible == false)
                 {
-                    Console.WriteLine("Right side spawn.");
-                    PictureBox enemyPicture = new PictureBox();
+                    BigHP = 5;
+                    BigSpeed = r.Next(UboatMinSpeed, UboatMaxSpeed);
+                    BigBoat.Location = new Point(-BigBoat.Width, r.Next(10 + BigBoat.Height, 750));
+                    BigBoat.Visible = true;
                 }
+                
+            }
+            
+        }
+
+        private void SetMinimumAndMaxSpeed(bool Set)
+        { 
+            if (UboatMinSpeed > 0 && UboatMaxSpeed > 10 && Set)
+            {
+                UboatMinSpeed++;
+                UboatMaxSpeed++;
+            }
+            else
+            {
+                UboatMinSpeed = 1;
+                UboatMaxSpeed = 11;
             }
         }
 
         private void MoveMissile()
         {
-            if (clicked == true)
+            if (ShotsFired == true)
             {
                 Torpedo.Visible = true;
                 if (Torpedo.Location.Y >= 0)
-                    Torpedo.Location = new Point(relativePoint.X, curPosY -= torpSpeed);
+                    Torpedo.Location = new Point(ClickedPoint.X, Torpedo.Location.Y - TorpSpeed); 
+                // Originally had this Torpedo.Location.Y var stored in a seperate value, and used -=. It was redundant.
                 else
                     MissileReset();
             }
@@ -294,56 +342,57 @@ namespace WindowsFormsApplication3
         private void MissileReset()
         {
             Torpedo.Visible = false;
-            clicked = false;
-            Torpedo.Location = startPos;
+            ShotsFired = false;
+            Torpedo.Location = new Point(0, ClientRectangle.Height);
         }
-
     }
-
 }
 
 /*
  Buglist:
  
-    Make Enemy class
-        Randomize right/left direction of attack
-        Create a new picturebox 
-            similar to the Uboat picturebox, 
-            since we do not have permission 
-            to create a new instance of it.
+    F = Finished
+    f = Finished, but not really implemented as was originally intended. In need of touchup or rework
+    N = Neglected / Abandoned
+    n = currently neglected, might take it up again later.
 
-    Enemies/Invaders
-        Need to add invaders
+    N.Make Enemy class
+        n.Randomize right/left direction of attack
+
+    Make Boss / Bonus Enemy
+        F.Create a new picturebox 
+            F.Similar to the Uboat picturebox -- Copy called "BigBoat"
+
+    F.Enemies/Invaders
+        F.Need to add invaders
             F.Pictures
             F.Moving enemies
             F.Random speeds
-            F.Change the speed increase
             F.Random heights
-            Random quantities
-        Boss invader
-            Invader HP + regular's hp
+            N.Random quantities --  cannot instansiate new Uboat objects, 
+                                    would need to rework the entire setup, 
+                                    or simply have multiple Uboats with 
+                                    spawn timers or the like, but meh.
+        F.Boss invader
+            F.Implement hp system (?)
     
     Score
-        Save to .txt
-        Show highscores
-        Make the player lose score when a uboat passes
+        
 
     Add loss/game over condition
         F.Add condition
         F.Add effect
-        Open Menu for Highscore save within the Client
-        Add highscore saving 
+        Open visual Menu for Highscore save within the Client
+        F.Add highscore saving 
+        Add new highscores instead of overwriting
+        F.Save to .xml -- This is currently done, but in a seperate file so as to not much up this project.
+        Show highscores
+        F.Make the player lose score when a uboat passes
             
-    Missiles
-        F.Missileno longer work as they should
+    F.Missiles
+        F.Missile no longer work as they should
             
     F.Multiple projectiles:
         F.Can launch several missiles by clicking several times.
         F.The objectives dont all dissappear until the last click goes through.
-
-    Might find some useful info here:
-    http://www.c-sharpcorner.com/article/space-invaders-for-C-Sharp-and-net/
-
-    Go chicken go!
-
  */

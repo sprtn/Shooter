@@ -478,6 +478,9 @@ namespace WindowsFormsApplication3
     Add loss/game over condition
         F.Add condition
         F.Add effect
+
+    Add Pause function
+        Pause button in menu field, also accessible by pressing "p" or middle mouse button.
             
     F.Missiles
         F.Missile no longer work as they should

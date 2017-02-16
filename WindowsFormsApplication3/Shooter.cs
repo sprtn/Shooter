@@ -43,6 +43,26 @@ namespace WindowsFormsApplication3
 
     public partial class Form1 : Form
     {
+        delegate void Anon();
+        delegate void Bnon(int arg1);
+
+        static int Ammunition, Score, DiffModifier;
+
+        int UPosX, UPosY,
+            UboatMinSpeed,
+            UboatMaxSpeed,
+            USpeed,
+            TorpSpeed;
+
+        Point ClickedPoint;
+
+        private bool
+            ShotsFired = false,
+            UboatIsHit,
+            LaunchBigBoat, BigBoatIsHit;
+
+        private int TorpedoDamage = 1,
+            UboatHP, BigHP, BigSpeed;
 
         protected override CreateParams CreateParams
         {
@@ -53,6 +73,8 @@ namespace WindowsFormsApplication3
                 return cp;
             }
         }
+
+        Anon StartVariables = () => { Ammunition = 15; Score = 0; DiffModifier = 0; };
 
         public Form1()
         {
@@ -66,31 +88,20 @@ namespace WindowsFormsApplication3
             timer1.Enabled = true;                  // Starts timer1.
 
             // Sets base values ready the game.
-            SetMinimumAndMaxSpeed(false);           // Sets the speed values needed for launching our enemies.
-            SetScoreAndAmmo();                      // Self-explanatory title.
+            SetMinimumAndMaxSpeed();           // Sets the speed values needed for launching our enemies.
+            StartVariables();                      // Self-explanatory title.
         }
 
-        int UPosX, UPosY, 
-            UboatMinSpeed, UboatMaxSpeed, USpeed,
-            TorpSpeed, Ammunition, Score, DiffModifier;
-
-        Point ClickedPoint;
-
-        private bool
-            ShotsFired = false,
-            UboatIsHit,
-            LaunchBigBoat, BigBoatIsHit;
-
-        private int TorpedoDamage = 1,
-            UboatHP, BigHP, BigSpeed;
+        
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
             if (ShotsFired == false && Ammunition > 0)
             {
-                GetTargetAndFire();
-                Ammunition--;
                 ShotsFired = true;
+                Ammunition--;
+                ClickedPoint = PointToClient(Cursor.Position);
+                TorpSpeed = 25;
             }
         }
 
@@ -105,24 +116,14 @@ namespace WindowsFormsApplication3
             SetGUI();
         }
 
-        private void GetTargetAndFire()
-        {
-            ClickedPoint = PointToClient(Cursor.Position);
-            TorpSpeed = 25;
-            ShotsFired = true;
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             EnemyControl();
             MissileControl();
             CollisionControl();
             UpdateLabelValues();
-            if (lossCondition())
-            {
+            if (Ammunition == 0 && ShotsFired == false)
                 timer1.Stop();
-                Console.WriteLine("You lost! " + Ammunition + " ammo, " + Score + " score");
-            }
         }
 
         private void newGameToolStripMenuItem_Click(object sender, EventArgs e)
@@ -135,38 +136,15 @@ namespace WindowsFormsApplication3
         private void NewGame()
         {
             timer1.Stop();
-                SetScoreAndAmmo();
-                SetMinimumAndMaxSpeed(false);
+                StartVariables();
+                SetMinimumAndMaxSpeed();
                 ResetAllComp();
                 UpdateLabelValues();
-                DiffModifier = 0;
+                
             timer1.Start();
         }
 
-        private void SetScoreAndAmmo()
-        {
-            Ammunition = 15;
-            Score = 0;
-        }
-
-        private bool lossCondition()
-        {
-            if (Ammunition == 0 && ShotsFired == false)
-                return true;
-            else
-                return false;
-        }
-
         // Labels and GUI
-
-        string BossLevelString ()
-        {
-            if (LaunchBigBoat)
-                return "Boss Level";
-            else
-                return "No Boss";
-        }
-
 
         private void UpdateLabelValues()
         {
@@ -175,30 +153,33 @@ namespace WindowsFormsApplication3
             ScoreLabel.Text = "Score:" + Score;
             AmmoLabel.Text = "Ammo: " + Ammunition;
             Difficulty.Text = "Level " + DiffModifier / 4;
-            BossLevel.Text = BossLevelString();
+            Anon BossCheck = () => { if (LaunchBigBoat) BossLevel.Text = "Boss Level"; else BossLevel.Text = "No Boss"; };
+            BossCheck();
         }
 
         private void SetGUI()
         {
-            if (pictureBox2.Bounds != ClientRectangle)
-                pictureBox2.Bounds = ClientRectangle;
-            if (pictureBox2.Visible == false)
-                pictureBox2.Visible = true;
             // Place the labels where we want them on the screen.
-            PlaceLabels(50); // The parameter is the inset in pixels.
-        }
-
-        private void PlaceLabels(int inset)
-        {
-            // Placing the labels where we want them on the screen.
-            UboatXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset);
-            TorpXY.Location = new Point(ClientRectangle.Width - inset, ClientRectangle.Height - inset / 2);
-            ScoreLabel.Location = new Point(inset - ScoreLabel.Width, inset / 2);
-            AmmoLabel.Location = new Point(inset - AmmoLabel.Width, inset);
-            CurrentSpeed.Location = new Point(inset - CurrentSpeed.Width, ClientRectangle.Height - inset);
-            IsClicked.Location = new Point(inset - IsClicked.Width, ClientRectangle.Height - inset / 2);
-            Difficulty.Location = new Point(ClientRectangle.Width - inset, inset / 2);
-            BossLevel.Location = new Point(ClientRectangle.Width - inset, inset);
+            Bnon UX = (arg1) =>
+            {
+                // Placing the labels where we want them on the screen. arg1 == inset.
+                UboatXY.Location = new Point(ClientRectangle.Width - arg1, ClientRectangle.Height - arg1);
+                TorpXY.Location = new Point(ClientRectangle.Width - arg1, ClientRectangle.Height - arg1 / 2);
+                ScoreLabel.Location = new Point(arg1 - ScoreLabel.Width, arg1 / 2);
+                AmmoLabel.Location = new Point(arg1 - AmmoLabel.Width, arg1);
+                CurrentSpeed.Location = new Point(arg1 - CurrentSpeed.Width, ClientRectangle.Height - arg1);
+                IsClicked.Location = new Point(arg1 - IsClicked.Width, ClientRectangle.Height - arg1 / 2);
+                Difficulty.Location = new Point(ClientRectangle.Width - arg1, arg1 / 2);
+                BossLevel.Location = new Point(ClientRectangle.Width - arg1, arg1);
+            };
+            Bnon SetElements = (arg1) => {
+                if (pictureBox2.Bounds != ClientRectangle)
+                    pictureBox2.Bounds = ClientRectangle;
+                if (pictureBox2.Visible == false)
+                    pictureBox2.Visible = true;
+                UX(arg1);
+            };
+            SetElements(50);
         }
 
         // Collision control, save, difficulty progression etc, BigBoat launching etc.
@@ -223,7 +204,7 @@ namespace WindowsFormsApplication3
                     if (DiffModifier % 10 == 0 && DiffModifier != 0)
                     {
                         LaunchBigBoat = true;
-                        SetMinimumAndMaxSpeed(true);
+                        SetMinimumAndMaxSpeed();
                     }
                 }
                 
@@ -236,12 +217,9 @@ namespace WindowsFormsApplication3
                     LaunchBigBoat = false;
                     BigBoatIsHit = true;
                     BigBoat.Visible = false;
-                    MissileReset();
                     Score += ((BigSpeed + DiffModifier) * 5);
-                } else
-                {
-                    MissileReset();
                 }
+                MissileReset();
             }
         }
 
@@ -252,6 +230,26 @@ namespace WindowsFormsApplication3
             if (UboatIsHit)
                 Uboat.Visible = false;
             MissileReset();
+        }
+
+        private void pauseResumeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PauseResume();
+        }
+
+        private void PauseResume()
+        {
+            if (timer1.Enabled)
+                timer1.Stop();
+            else
+                timer1.Start();
+        }
+
+        private void Form1_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == ' ' || e.KeyChar == 'p')
+                PauseResume();
+            return;
         }
 
         // Enemy movement, creation and management.
@@ -324,9 +322,9 @@ namespace WindowsFormsApplication3
 
         // Speed modification
 
-        private void SetMinimumAndMaxSpeed(bool Set)
+        private void SetMinimumAndMaxSpeed()
         { 
-            if (UboatMinSpeed > 0 && UboatMaxSpeed > 10 && Set)
+            if (UboatMinSpeed > 0 && UboatMaxSpeed > 10)
             {
                 UboatMinSpeed++;
                 UboatMaxSpeed++;
@@ -355,7 +353,6 @@ namespace WindowsFormsApplication3
                 Torpedo.Visible = true;
                 if (Torpedo.Location.Y >= 0)
                     Torpedo.Location = new Point(ClickedPoint.X, Torpedo.Location.Y - TorpSpeed); 
-                // Originally had this Torpedo.Location.Y var stored in a seperate value, and used -=. It was redundant.
                 else
                     MissileReset();
             }
@@ -380,13 +377,24 @@ namespace WindowsFormsApplication3
             {
                 SaveToFile(_player, _score, file);
             }
-            catch
+            catch (Exception e)
             {
+                Console.WriteLine("{0} tells us we are unable to locate {1}, so we created it.", e, file);
                 CreateNewXML(_player, _score, file);
-                Console.WriteLine("Error caught. Unable to locate Highscores.xml, so we created a new XML file.");
             }
-            if (File.Exists(file)) {
-                SortXMLByScore(file);
+            finally
+            {
+                if (File.Exists(file))
+                {
+                    XDocument doc = XDocument.Load(file);
+                    var SortScores = doc.Element("Highscores").Elements("Score").OrderByDescending(Score => (int)Score.Attribute("Points"));
+                    doc = new XDocument(new XElement("Highscores", SortScores));
+                    doc.Save(file);
+                }
+                else
+                {
+                    Console.WriteLine("XML error: {0} cannot be updated with \nPlayer: {1}, Score: {2}", file, _player, _score);
+                }
             }
         }
 
@@ -408,14 +416,14 @@ namespace WindowsFormsApplication3
                 Console.WriteLine("Forsøker å lagre informasjon i XML-format.");
                 XDocument doc = new XDocument(
                                     new XElement("Highscores"));
-                Console.WriteLine("Prøver å lagre til " + file);
+                Console.WriteLine("Prøver å lagre til {0}", file);
                 doc.Save(file);
                 Console.WriteLine("Dokumentet ble lagret!");
                 SaveToFile(_player, _score, file);
             }
             catch (Exception e)
             {
-                Console.WriteLine("CreateNewXML.Feilmelding: \"" + e + "\"");
+                Console.WriteLine("CreateNewXML.Feilmelding: {0}", e);
             }
         }
 
@@ -429,6 +437,7 @@ namespace WindowsFormsApplication3
             );
             doc.Element("Highscores").Add(newScore);
             doc.Save(file);
+            SortXMLByScore(file);
         }
 
         private void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)

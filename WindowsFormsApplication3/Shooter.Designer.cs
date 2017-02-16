@@ -48,6 +48,7 @@
             this.submitHighscoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BigBoat = new System.Windows.Forms.PictureBox();
             this.BossLevel = new System.Windows.Forms.Label();
+            this.pauseResumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
@@ -170,7 +171,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newGameToolStripMenuItem,
-            this.showHighscoresToolStripMenuItem});
+            this.showHighscoresToolStripMenuItem,
+            this.pauseResumeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1261, 24);
@@ -230,6 +232,13 @@
             this.BossLevel.TabIndex = 12;
             this.BossLevel.Text = "label1";
             // 
+            // pauseResumeToolStripMenuItem
+            // 
+            this.pauseResumeToolStripMenuItem.Name = "pauseResumeToolStripMenuItem";
+            this.pauseResumeToolStripMenuItem.Size = new System.Drawing.Size(97, 20);
+            this.pauseResumeToolStripMenuItem.Text = "Pause/Resume";
+            this.pauseResumeToolStripMenuItem.Click += new System.EventHandler(this.pauseResumeToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -253,6 +262,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).EndInit();
@@ -286,6 +296,7 @@
         private System.Windows.Forms.ToolStripMenuItem submitHighscoreToolStripMenuItem;
         private System.Windows.Forms.PictureBox BigBoat;
         private System.Windows.Forms.Label BossLevel;
+        private System.Windows.Forms.ToolStripMenuItem pauseResumeToolStripMenuItem;
     }
 }
 

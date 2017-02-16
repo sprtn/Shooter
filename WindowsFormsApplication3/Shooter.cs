@@ -88,11 +88,9 @@ namespace WindowsFormsApplication3
             timer1.Enabled = true;                  // Starts timer1.
 
             // Sets base values ready the game.
-            SetMinimumAndMaxSpeed();           // Sets the speed values needed for launching our enemies.
-            StartVariables();                      // Self-explanatory title.
+            SetMinimumAndMaxSpeed();                // Sets the speed values needed for launching our enemies.
+            StartVariables();                       // Self-explanatory title.
         }
-
-        
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
@@ -140,7 +138,6 @@ namespace WindowsFormsApplication3
                 SetMinimumAndMaxSpeed();
                 ResetAllComp();
                 UpdateLabelValues();
-                
             timer1.Start();
         }
 
@@ -153,7 +150,8 @@ namespace WindowsFormsApplication3
             ScoreLabel.Text = "Score:" + Score;
             AmmoLabel.Text = "Ammo: " + Ammunition;
             Difficulty.Text = "Level " + DiffModifier / 4;
-            Anon BossCheck = () => { if (LaunchBigBoat) BossLevel.Text = "Boss Level"; else BossLevel.Text = "No Boss"; };
+            Anon BossCheck = () => { if (LaunchBigBoat) BossLevel.Text = "Boss Level"; else BossLevel.Text = "No Boss"; }; 
+            // Unnecessary use of anonymous function, but it looks better.
             BossCheck();
         }
 
@@ -239,10 +237,13 @@ namespace WindowsFormsApplication3
 
         private void PauseResume()
         {
-            if (timer1.Enabled)
-                timer1.Stop();
-            else
-                timer1.Start();
+            if (Ammunition > -1)
+            {
+                if (timer1.Enabled)
+                    timer1.Stop();
+                else
+                    timer1.Start();
+            }
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
@@ -250,6 +251,17 @@ namespace WindowsFormsApplication3
             if (e.KeyChar == ' ' || e.KeyChar == 'p')
                 PauseResume();
             return;
+        }
+
+        private void Form1_Click(object sender, EventArgs e)
+        {
+            if (ShotsFired == false && Ammunition > 0)
+            {
+                ShotsFired = true;
+                Ammunition--;
+                ClickedPoint = PointToClient(Cursor.Position);
+                TorpSpeed = 25;
+            }
         }
 
         // Enemy movement, creation and management.
@@ -368,83 +380,70 @@ namespace WindowsFormsApplication3
         // Highscore stuffs:
         private void submitHighscoreToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //XMLManager xMan = new XMLManager();
             XMLmanager("Vegard", Score, "HighScores.xml");
         }
 
-        public static void XMLmanager(string _player, int _score, string file)
+        public void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            try
+
+        }
+        
+            public void XMLmanager(string m_player, int m_score, string m_filepath)
             {
-                SaveToFile(_player, _score, file);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("{0} tells us we are unable to locate {1}, so we created it.", e, file);
-                CreateNewXML(_player, _score, file);
-            }
-            finally
-            {
-                if (File.Exists(file))
+                try
                 {
-                    XDocument doc = XDocument.Load(file);
-                    var SortScores = doc.Element("Highscores").Elements("Score").OrderByDescending(Score => (int)Score.Attribute("Points"));
-                    doc = new XDocument(new XElement("Highscores", SortScores));
-                    doc.Save(file);
+                    SaveToFile(m_player, m_score, m_filepath, true);
                 }
-                else
+                catch (Exception e)
                 {
-                    Console.WriteLine("XML error: {0} cannot be updated with \nPlayer: {1}, Score: {2}", file, _player, _score);
+                    Console.WriteLine("{0} tells us we are unable to locate {1}, so we created it.", e, m_filepath);
+                    CreateNewXML(m_player, m_score, m_filepath);
                 }
             }
-        }
 
-
-        // Sorts the Highscores in ascending order.
-        private static void SortXMLByScore(string file)
-        {
-            XDocument doc = XDocument.Load(file);
-            var SortScores = doc.Element("Highscores").Elements("Score").OrderByDescending(Score => (int)Score.Attribute("Points"));
-            doc = new XDocument(new XElement("Highscores", SortScores));
-            doc.Save(file);
-        }
-
-        // Creates a new XML document in our wanted format
-        private static void CreateNewXML(string _player, int _score, string file)
-        {
-            try
+            // Creates a new XML document in our wanted format
+            private void CreateNewXML(string m_player, int m_score, string m_filepath)
             {
-                Console.WriteLine("Forsøker å lagre informasjon i XML-format.");
-                XDocument doc = new XDocument(
-                                    new XElement("Highscores"));
-                Console.WriteLine("Prøver å lagre til {0}", file);
-                doc.Save(file);
-                Console.WriteLine("Dokumentet ble lagret!");
-                SaveToFile(_player, _score, file);
+                try
+                {
+                    Console.WriteLine("Forsøker å lagre informasjon i XML-format.");
+                    XDocument doc = new XDocument(
+                                        new XElement("Highscores"));
+                    Console.WriteLine("Prøver å lagre til {0}", m_filepath);
+                    doc.Save(m_filepath);
+                    Console.WriteLine("Dokumentet ble lagret!");
+                    SaveToFile(m_player, m_score, m_filepath, false);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("CreateNewXML.Feilmelding: {0}", e);
+                }
             }
-            catch (Exception e)
+
+            // Saves current score and the name input into the XML document
+            private void SaveToFile(string m_player, int m_score, string m_filepath, bool m_mustSort)
             {
-                Console.WriteLine("CreateNewXML.Feilmelding: {0}", e);
+                XDocument doc = XDocument.Load(m_filepath);
+                var newScore = new XElement("Score",
+                    new XAttribute("Player", m_player),
+                    new XAttribute("Points", m_score)
+                );
+                doc.Element("Highscores").Add(newScore);
+                doc.Save(m_filepath);
+            if (m_mustSort == true)
+                SortXMLByScore(m_filepath);
+            }
+
+            // Sorts the Highscores in ascending order.
+            private static void SortXMLByScore(string m_filepath)
+            {
+                XDocument doc = XDocument.Load(m_filepath);
+                var SortScores = doc.Element(m_filepath).Elements("Score").OrderByDescending(Score => (int)Score.Attribute("Points"));
+                doc = new XDocument(new XElement(m_filepath, SortScores));
+                doc.Save(m_filepath);
             }
         }
-
-        // Saves current score and the name input into the XML document
-        private static void SaveToFile(string _player, int _score, string file)
-        {
-            XDocument doc = XDocument.Load(file);
-            var newScore = new XElement("Score",
-                new XAttribute("Player", _player),
-                new XAttribute("Points", _score)
-            );
-            doc.Element("Highscores").Add(newScore);
-            doc.Save(file);
-            SortXMLByScore(file);
-        }
-
-        private void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-        }
-    }
 }
 
 /*

@@ -46,9 +46,9 @@
             this.showHighscoresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showHighscoresToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.submitHighscoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.pauseResumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BigBoat = new System.Windows.Forms.PictureBox();
             this.BossLevel = new System.Windows.Forms.Label();
-            this.pauseResumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
@@ -81,7 +81,7 @@
             this.pictureBox2.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("pictureBox2.BackgroundImage")));
             this.pictureBox2.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Cross;
-            this.pictureBox2.Location = new System.Drawing.Point(9, 30);
+            this.pictureBox2.Location = new System.Drawing.Point(-66, 85);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(1257, 533);
@@ -209,6 +209,13 @@
             this.submitHighscoreToolStripMenuItem.Text = "Submit Current Score";
             this.submitHighscoreToolStripMenuItem.Click += new System.EventHandler(this.submitHighscoreToolStripMenuItem_Click);
             // 
+            // pauseResumeToolStripMenuItem
+            // 
+            this.pauseResumeToolStripMenuItem.Name = "pauseResumeToolStripMenuItem";
+            this.pauseResumeToolStripMenuItem.Size = new System.Drawing.Size(97, 20);
+            this.pauseResumeToolStripMenuItem.Text = "Pause/Resume";
+            this.pauseResumeToolStripMenuItem.Click += new System.EventHandler(this.pauseResumeToolStripMenuItem_Click);
+            // 
             // BigBoat
             // 
             this.BigBoat.AccessibleDescription = "Uboat object";
@@ -231,13 +238,6 @@
             this.BossLevel.Size = new System.Drawing.Size(35, 13);
             this.BossLevel.TabIndex = 12;
             this.BossLevel.Text = "label1";
-            // 
-            // pauseResumeToolStripMenuItem
-            // 
-            this.pauseResumeToolStripMenuItem.Name = "pauseResumeToolStripMenuItem";
-            this.pauseResumeToolStripMenuItem.Size = new System.Drawing.Size(97, 20);
-            this.pauseResumeToolStripMenuItem.Text = "Pause/Resume";
-            this.pauseResumeToolStripMenuItem.Click += new System.EventHandler(this.pauseResumeToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -262,6 +262,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Click += new System.EventHandler(this.Form1_Click);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Form1_KeyPress);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
             this.Resize += new System.EventHandler(this.Form1_Resize);

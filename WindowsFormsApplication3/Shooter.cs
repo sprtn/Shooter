@@ -140,7 +140,6 @@ namespace WindowsFormsApplication3
                 SetMinimumAndMaxSpeed();
                 ResetAllComp();
                 UpdateLabelValues();
-                
             timer1.Start();
         }
 
@@ -153,7 +152,8 @@ namespace WindowsFormsApplication3
             ScoreLabel.Text = "Score:" + Score;
             AmmoLabel.Text = "Ammo: " + Ammunition;
             Difficulty.Text = "Level " + DiffModifier / 4;
-            Anon BossCheck = () => { if (LaunchBigBoat) BossLevel.Text = "Boss Level"; else BossLevel.Text = "No Boss"; };
+            Anon BossCheck = () => { if (LaunchBigBoat) BossLevel.Text = "Boss Level"; else BossLevel.Text = "No Boss"; }; 
+            // Unnecessary use of anonymous function, but it looks better.
             BossCheck();
         }
 
@@ -250,6 +250,17 @@ namespace WindowsFormsApplication3
             if (e.KeyChar == ' ' || e.KeyChar == 'p')
                 PauseResume();
             return;
+        }
+
+        private void Form1_Click(object sender, EventArgs e)
+        {
+            if (ShotsFired == false && Ammunition > 0)
+            {
+                ShotsFired = true;
+                Ammunition--;
+                ClickedPoint = PointToClient(Cursor.Position);
+                TorpSpeed = 25;
+            }
         }
 
         // Enemy movement, creation and management.

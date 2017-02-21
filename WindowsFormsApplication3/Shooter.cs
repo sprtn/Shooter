@@ -78,7 +78,6 @@ namespace WindowsFormsApplication3
 
         public Form1()
         {
-            Anon Exit = () => { this.Close(); };
             // Let's set the form to be maximized and without borders for a fullscreen app.
             FormBorderStyle = FormBorderStyle.None;  // <- Removes the borders.
             WindowState = FormWindowState.Maximized; // <- This function automatically calls SetGUI, since the size changes. Neat!
@@ -89,13 +88,13 @@ namespace WindowsFormsApplication3
             timer1.Enabled = true;                  // Starts timer1.
 
             // Sets base values ready the game.
-            SetMinimumAndMaxSpeed();                // Sets the speed values needed for launching our enemies.
+            ModifyBoatSpeeds();                // Sets the speed values needed for launching our enemies.
             StartVariables();                       // Self-explanatory title.
         }
 
         private void pictureBox2_Click(object sender, EventArgs e)
         {
-            if (ShotsFired == false && Ammunition > 0)
+            if (ShotsFired == false && Ammunition > 0 && timer1.Enabled)
             {
                 ShotsFired = true;
                 Ammunition--;
@@ -112,7 +111,8 @@ namespace WindowsFormsApplication3
                 if (NameBox.Visible == true)
                 {
                     NameBox.Visible = false;
-                    // Turn off pause and everything.
+                    HighscoreHeader.Visible = false;
+                    PauseGame(false);
                 }
                 else
                     Close();
@@ -144,10 +144,11 @@ namespace WindowsFormsApplication3
         private void NewGame()
         {
             timer1.Stop();
-                StartVariables();
-                SetMinimumAndMaxSpeed();
-                ResetAllComp();
-                UpdateLabelValues();
+            StartVariables();
+            ModifyBoatSpeeds();
+            ResetAllComp();
+            UpdateLabelValues();
+            SetGUI();
             timer1.Start();
         }
 
@@ -160,8 +161,7 @@ namespace WindowsFormsApplication3
             ScoreLabel.Text = "Score:" + Score;
             AmmoLabel.Text = "Ammo: " + Ammunition;
             Difficulty.Text = "Level " + DiffModifier / 4;
-            Anon BossCheck = () => { if (LaunchBigBoat) BossLevel.Text = "Boss Level"; else BossLevel.Text = "No Boss"; }; 
-            // Unnecessary use of anonymous function, but it looks better.
+            Anon BossCheck = () => { if (LaunchBigBoat) BossLevel.Text = "Boss Level"; else BossLevel.Text = "No Boss"; };
             BossCheck();
         }
 
@@ -181,6 +181,7 @@ namespace WindowsFormsApplication3
                 BossLevel.Location = new Point(ClientRectangle.Width - arg1, arg1);
                 NameBox.Location = new Point((ClientRectangle.Width / 2) - (int)((double) HighscoreHeader.Width * 3.2), ClientRectangle.Height / 2 + NameBox.Height);
                 HighscoreHeader.Location = new Point((ClientRectangle.Width / 2) - (HighscoreHeader.Width * 2), ClientRectangle.Height / 2 );
+                DontDisplayScoreInput();
             };
             Bnon SetElements = (arg1) => {
                 if (pictureBox2.Bounds != ClientRectangle)
@@ -190,6 +191,7 @@ namespace WindowsFormsApplication3
                 UX(arg1);
             };
             SetElements(50);
+
         }
 
         // Collision control, save, difficulty progression etc, BigBoat launching etc.
@@ -214,7 +216,7 @@ namespace WindowsFormsApplication3
                     if (DiffModifier % 10 == 0 && DiffModifier != 0)
                     {
                         LaunchBigBoat = true;
-                        SetMinimumAndMaxSpeed();
+                        ModifyBoatSpeeds();
                     }
                 }
                 
@@ -273,12 +275,11 @@ namespace WindowsFormsApplication3
         {
             if (e.KeyChar == (char)Keys.Enter)
             {
-                string playerName = NameBox.Text ?? "Anon";
-                if (playerName.Length == 0 || playerName == null)
+                string playerName = NameBox.Text ?? "Anon"; // Text should technically never be saved as null as you cannot submit the score without pressing on the textbox.
+                if (playerName.Length == 0)
                     playerName = "Anon"; // The text-box starts off as "". An empty string, but not null.
-
                 XMLManager.XMLSubmit(playerName, Score);
-                PauseGame(false);
+                NewGame();
             }
             else if (e.KeyChar == (char)Keys.Escape)
             {
@@ -288,10 +289,7 @@ namespace WindowsFormsApplication3
                     timer1.Start();
                 }
                 else
-                {
                     Close();
-                }
-                
             }
         }
 
@@ -366,7 +364,6 @@ namespace WindowsFormsApplication3
             // Only place we use Random in the entire program.
 
             if (EnemyType == "Small")
-            {
                 if (Uboat.Visible == false)
                 {
                     UboatHP = 1;
@@ -377,9 +374,7 @@ namespace WindowsFormsApplication3
                     Uboat.Visible = true;                           // Sets visibility (initiates movement through the EnemyControl function)
                     Uboat.Location = new Point(UPosX, UPosY);       // Sets start location
                 }
-            }
             if (EnemyType == "Big")
-            {
                 if (BigBoat.Visible == false)
                 {
                     BigHP = 5;
@@ -387,14 +382,11 @@ namespace WindowsFormsApplication3
                     BigBoat.Location = new Point(-BigBoat.Width, r.Next(10 + BigBoat.Height, 750));
                     BigBoat.Visible = true;
                 }
-                
-            }
-            
         }
 
         // Speed modification
 
-        private void SetMinimumAndMaxSpeed()
+        private void ModifyBoatSpeeds()
         { 
             if (UboatMinSpeed > 0 && UboatMaxSpeed > 10)
             {
@@ -470,13 +462,9 @@ namespace WindowsFormsApplication3
                 finally
                 {
                     if (File.Exists(m_filepath))
-                    {
                         SortXMLByScore(m_filepath);
-                    }
                     else
-                    {
                         Console.WriteLine("XML error: {0} cannot be updated with \nPlayer: {1}, Score: {2}", m_filepath, _player, _score);
-                    }
                 }
             }
 
@@ -552,7 +540,7 @@ namespace WindowsFormsApplication3
     N.Make Enemy class
         n.Randomize right/left direction of attack
 
-    Make Boss / Bonus Enemy
+    F.Make Boss / Bonus Enemy
         F.Create a new picturebox 
             F.Similar to the Uboat picturebox -- Copy called "BigBoat"
 
@@ -568,29 +556,32 @@ namespace WindowsFormsApplication3
                                     spawn timers or the like, but meh.
         F.Boss invader
             F.Implement hp system (?)
-            New Game doesn't reset the DiffModifier!
+            F.New Game doesn't reset the DiffModifier!
     
     F.Score
         F.Make the player lose score when a uboat passes
         F.Add highscore saving 
         F.Add new highscores instead of overwriting
         F.Save to .xml -- This is currently done, but in a seperate file so as to not much up this project.
-        Show highscores
-        Open visual Menu for Highscore save within the Client
+        F.Open visual Menu for Highscore save within the Client
+        Display top 10 highscores from the XML doc.
 
     Pause
-        When submitting score, you automatically start the game again.
+        F.When submitting score, you start a new game.
         F.Make overloading pause function
             F.One with true/false
             F.One that sets it to the opposite value, no arg.
-            On timer1.Start(), check that the score input boxes aren't showing using the designated method. Also on new game.
+            F.On timer1.Start(), check that the score input boxes aren't showing using the designated method. Also on new game.
+            F.Make the click event (missile fire) on picturebox2 disabled when game is paused.
+            Have text showing game is paused, and what button(s) to press to resume. p/spacebar
 
     Add loss/game over condition
         F.Add condition
         F.Add effect
 
-    Add Pause function
-        Pause button in menu field, also accessible by pressing "p" or middle mouse button.
+    F.Add Pause function
+        F.Pause button in menu field, also accessible by pressing "p" or spacebar.
+            Also add middle mouse button?
             
     F.Missiles
         F.Missile no longer work as they should

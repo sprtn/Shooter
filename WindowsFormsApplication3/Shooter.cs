@@ -73,11 +73,12 @@ namespace WindowsFormsApplication3
                 return cp;
             }
         }
-
+        
         Anon StartVariables = () => { Ammunition = 15; Score = 0; DiffModifier = 0; };
 
         public Form1()
         {
+            Anon Exit = () => { this.Close(); };
             // Let's set the form to be maximized and without borders for a fullscreen app.
             FormBorderStyle = FormBorderStyle.None;  // <- Removes the borders.
             WindowState = FormWindowState.Maximized; // <- This function automatically calls SetGUI, since the size changes. Neat!
@@ -106,7 +107,16 @@ namespace WindowsFormsApplication3
 
         private void Form1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Escape) { this.Close(); }     // Use Esc key to close app
+            if (e.KeyCode == Keys.Escape)
+            {
+                if (NameBox.Visible == true)
+                {
+                    NameBox.Visible = false;
+                    // Turn off pause and everything.
+                }
+                else
+                    Close();
+            }
         }
 
         private void Form1_Resize(object sender, EventArgs e)
@@ -169,6 +179,8 @@ namespace WindowsFormsApplication3
                 IsClicked.Location = new Point(arg1 - IsClicked.Width, ClientRectangle.Height - arg1 / 2);
                 Difficulty.Location = new Point(ClientRectangle.Width - arg1, arg1 / 2);
                 BossLevel.Location = new Point(ClientRectangle.Width - arg1, arg1);
+                NameBox.Location = new Point((ClientRectangle.Width / 2) - (int)((double) HighscoreHeader.Width * 3.2), ClientRectangle.Height / 2 + NameBox.Height);
+                HighscoreHeader.Location = new Point((ClientRectangle.Width / 2) - (HighscoreHeader.Width * 2), ClientRectangle.Height / 2 );
             };
             Bnon SetElements = (arg1) => {
                 if (pictureBox2.Bounds != ClientRectangle)
@@ -232,24 +244,72 @@ namespace WindowsFormsApplication3
 
         private void pauseResumeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            PauseResume();
+            PauseGame();
         }
 
-        private void PauseResume()
+        private void PauseGame(bool PauseGame)
         {
-            if (Ammunition > -1)
+            if (PauseGame == true)
             {
-                if (timer1.Enabled)
-                    timer1.Stop();
-                else
+                timer1.Stop();
+            }
+            else
+            {
+                DontDisplayScoreInput();
+                timer1.Start();
+            }
+        }
+
+        private void DontDisplayScoreInput()
+        {
+            if (HighscoreHeader.Visible == true)
+                HighscoreHeader.Visible = false;
+            if (NameBox.Visible == true)
+                NameBox.Visible = false;
+            NameBox.Text = null;
+        }
+
+        private void NameBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                string playerName = NameBox.Text ?? "Anon";
+                if (playerName.Length == 0 || playerName == null)
+                    playerName = "Anon"; // The text-box starts off as "". An empty string, but not null.
+
+                XMLManager.XMLSubmit(playerName, Score);
+                PauseGame(false);
+            }
+            else if (e.KeyChar == (char)Keys.Escape)
+            {
+                if (NameBox.Visible == true)
+                {
+                    DontDisplayScoreInput();
                     timer1.Start();
+                }
+                else
+                {
+                    Close();
+                }
+                
+            }
+        }
+
+        private void PauseGame()
+        {
+            if (timer1.Enabled)
+                timer1.Stop();
+            else
+            {
+                DontDisplayScoreInput();
+                timer1.Start();
             }
         }
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == ' ' || e.KeyChar == 'p')
-                PauseResume();
+                PauseGame();
             return;
         }
 
@@ -378,72 +438,107 @@ namespace WindowsFormsApplication3
         }
 
         // Highscore stuffs:
+
+        private void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // For showing highscores.
+        }
+
         private void submitHighscoreToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //XMLManager xMan = new XMLManager();
-            XMLmanager("Vegard", Score, "HighScores.xml");
+            PauseGame(true);
+            HighscoreHeader.Text = "Input your name below!";
+            HighscoreHeader.Visible = true;
+            NameBox.Visible = true;
         }
 
-        public void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)
+        class XMLManager
         {
 
-        }
-        
-            public void XMLmanager(string m_player, int m_score, string m_filepath)
+            public static void XMLSubmit(string _player, int _score)
             {
+                string m_filepath = "Highscores.xml";
                 try
                 {
-                    SaveToFile(m_player, m_score, m_filepath, true);
+                    SaveToFile(_player, _score, m_filepath);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine("{0} tells us we are unable to locate {1}, so we created it.", e, m_filepath);
-                    CreateNewXML(m_player, m_score, m_filepath);
+                    CreateNewXML(_player, _score, m_filepath);
+                }
+                finally
+                {
+                    if (File.Exists(m_filepath))
+                    {
+                        SortXMLByScore(m_filepath);
+                    }
+                    else
+                    {
+                        Console.WriteLine("XML error: {0} cannot be updated with \nPlayer: {1}, Score: {2}", m_filepath, _player, _score);
+                    }
                 }
             }
 
-            // Creates a new XML document in our wanted format
-            private void CreateNewXML(string m_player, int m_score, string m_filepath)
+
+            /// <summary>
+            /// Sorts the Highscores in ascending order.
+            /// </summary>
+            /// <param name="filepath"> Filepath to save the highscores to </param>
+            private static void SortXMLByScore(string filepath)
+            {
+                string temp_file = filepath.Remove(filepath.Length - 4);    // Removes the last 4 characters of the string. We get a temporary file that is not .xml so we can alter it and overwrite the .xml later.
+                XDocument doc = XDocument.Load(filepath);                   //Loading the file from the folder.
+                var SortScores = doc.Element(temp_file).Elements("Score").OrderByDescending(Score => (int)Score.Attribute("Points")); // Sorting the file based on their Points
+                doc = new XDocument(new XElement(temp_file, SortScores));   // Preparing the file for saving
+                doc.Save(filepath);                                         // Overwriting original file
+            }
+
+            /// <summary>
+            /// Creates a new XML document in our wanted format
+            /// </summary>
+            /// <param name="player"> The player name input </param>
+            /// <param name="score"> Score to be registered on player name </param>
+            /// <param name="file"> Filepath to save the highscores to </param>
+            private static void CreateNewXML(string player, int score, string file)
             {
                 try
                 {
-                    Console.WriteLine("Forsøker å lagre informasjon i XML-format.");
                     XDocument doc = new XDocument(
-                                        new XElement("Highscores"));
-                    Console.WriteLine("Prøver å lagre til {0}", m_filepath);
-                    doc.Save(m_filepath);
-                    Console.WriteLine("Dokumentet ble lagret!");
-                    SaveToFile(m_player, m_score, m_filepath, false);
+                                        new XElement("Highscores"));        // Creating an XML with the "Highscores" element.
+                    doc.Save(file);                                         // Saving a fresh XML-file
+                    SaveToFile(player, score, file);                        // Calling SaveToFile-function
                 }
-                catch (Exception e)
+                catch (Exception e)                                         // Catches if there's an error writing to file.
                 {
-                    Console.WriteLine("CreateNewXML.Feilmelding: {0}", e);
+                    Console.WriteLine("CreateNewXML.Feilmelding: {0}", e);  // Not necessary, but good practice.
                 }
             }
 
-            // Saves current score and the name input into the XML document
-            private void SaveToFile(string m_player, int m_score, string m_filepath, bool m_mustSort)
+            /// <summary>
+            /// Saves current score and the name input into the XML document.
+            /// 
+            /// Adding the attrubute "Player" and "Score" under a Score-element.
+            /// This is then added under the "Highscores" element we created
+            /// in the CreateNewXML-method.
+            /// 
+            /// </summary>
+            /// <param name="m_player"> The player name input </param>
+            /// <param name="m_score"> Score to be registered on player name </param>
+            /// <param name="m_filepath"> Filepath to save the highscores to </param>
+            private static void SaveToFile(string m_player, int m_score, string m_filepath)
             {
-                XDocument doc = XDocument.Load(m_filepath);
-                var newScore = new XElement("Score",
-                    new XAttribute("Player", m_player),
-                    new XAttribute("Points", m_score)
+                XDocument doc = XDocument.Load(m_filepath);     // Loading the file from the filepath and storing it in a temporary variable
+                var newScore = new XElement("Score",            // Adding a new element, Score.
+                    new XAttribute("Player", m_player),         // Adding "Player" attribute to the Score element
+                    new XAttribute("Points", m_score)           // Adding "Points" attribute to the Score element.
                 );
-                doc.Element("Highscores").Add(newScore);
-                doc.Save(m_filepath);
-            if (m_mustSort == true)
-                SortXMLByScore(m_filepath);
-            }
-
-            // Sorts the Highscores in ascending order.
-            private static void SortXMLByScore(string m_filepath)
-            {
-                XDocument doc = XDocument.Load(m_filepath);
-                var SortScores = doc.Element(m_filepath).Elements("Score").OrderByDescending(Score => (int)Score.Attribute("Points"));
-                doc = new XDocument(new XElement(m_filepath, SortScores));
-                doc.Save(m_filepath);
+                doc.Element("Highscores").Add(newScore);        // Adding the newly created "Score" Element under the "Highscore" element in the temporary XML-file.
+                doc.Save(m_filepath);                           // Updating the xml-doc at the filepath
+                SortXMLByScore(m_filepath);                     // Calling the sort function
             }
         }
+    }
 }
 
 /*
@@ -483,6 +578,13 @@ namespace WindowsFormsApplication3
         Show highscores
         Open visual Menu for Highscore save within the Client
 
+    Pause
+        When submitting score, you automatically start the game again.
+        F.Make overloading pause function
+            F.One with true/false
+            F.One that sets it to the opposite value, no arg.
+            On timer1.Start(), check that the score input boxes aren't showing using the designated method. Also on new game.
+
     Add loss/game over condition
         F.Add condition
         F.Add effect
@@ -497,4 +599,3 @@ namespace WindowsFormsApplication3
         F.Can launch several missiles by clicking several times.
         F.The objectives dont all dissappear until the last click goes through.
  */
- 

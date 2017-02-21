@@ -49,6 +49,8 @@
             this.pauseResumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.BigBoat = new System.Windows.Forms.PictureBox();
             this.BossLevel = new System.Windows.Forms.Label();
+            this.NameBox = new System.Windows.Forms.TextBox();
+            this.HighscoreHeader = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
@@ -239,6 +241,28 @@
             this.BossLevel.TabIndex = 12;
             this.BossLevel.Text = "label1";
             // 
+            // NameBox
+            // 
+            this.NameBox.AccessibleName = "NameBox";
+            this.NameBox.Location = new System.Drawing.Point(512, 330);
+            this.NameBox.MaxLength = 16;
+            this.NameBox.Name = "NameBox";
+            this.NameBox.Size = new System.Drawing.Size(205, 20);
+            this.NameBox.TabIndex = 13;
+            this.NameBox.Visible = false;
+            this.NameBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NameBox_KeyPress);
+            // 
+            // HighscoreHeader
+            // 
+            this.HighscoreHeader.AccessibleName = "HighscoreHeader";
+            this.HighscoreHeader.AutoSize = true;
+            this.HighscoreHeader.Location = new System.Drawing.Point(597, 314);
+            this.HighscoreHeader.Name = "HighscoreHeader";
+            this.HighscoreHeader.Size = new System.Drawing.Size(35, 13);
+            this.HighscoreHeader.TabIndex = 14;
+            this.HighscoreHeader.Text = "label1";
+            this.HighscoreHeader.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -246,6 +270,8 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1261, 627);
+            this.Controls.Add(this.HighscoreHeader);
+            this.Controls.Add(this.NameBox);
             this.Controls.Add(this.BossLevel);
             this.Controls.Add(this.BigBoat);
             this.Controls.Add(this.Difficulty);
@@ -298,6 +324,8 @@
         private System.Windows.Forms.PictureBox BigBoat;
         private System.Windows.Forms.Label BossLevel;
         private System.Windows.Forms.ToolStripMenuItem pauseResumeToolStripMenuItem;
+        private System.Windows.Forms.TextBox NameBox;
+        private System.Windows.Forms.Label HighscoreHeader;
     }
 }
 

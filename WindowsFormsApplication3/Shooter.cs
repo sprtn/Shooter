@@ -179,8 +179,6 @@ namespace WindowsFormsApplication3
                 IsClicked.Location = new Point(arg1 - IsClicked.Width, ClientRectangle.Height - arg1 / 2);
                 Difficulty.Location = new Point(ClientRectangle.Width - arg1, arg1 / 2);
                 BossLevel.Location = new Point(ClientRectangle.Width - arg1, arg1);
-                NameBox.Location = new Point((ClientRectangle.Width / 2) - (int)((double) HighscoreHeader.Width * 3.2), ClientRectangle.Height / 2 + NameBox.Height);
-                HighscoreHeader.Location = new Point((ClientRectangle.Width / 2) - (HighscoreHeader.Width * 2), ClientRectangle.Height / 2 );
                 DontDisplayScoreInput();
             };
             Bnon SetElements = (arg1) => {
@@ -440,6 +438,8 @@ namespace WindowsFormsApplication3
         {
             PauseGame(true);
             HighscoreHeader.Text = "Input your name below!";
+            NameBox.Location = new Point((ClientRectangle.Width / 2) - (NameBox.Width / 2), ClientRectangle.Height / 2 + NameBox.Height);
+            HighscoreHeader.Location = new Point((ClientRectangle.Width / 2) - (HighscoreHeader.Width / 2), ClientRectangle.Height / 2);
             HighscoreHeader.Visible = true;
             NameBox.Visible = true;
         }

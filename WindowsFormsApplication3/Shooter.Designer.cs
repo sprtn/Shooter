@@ -51,6 +51,7 @@
             this.BossLevel = new System.Windows.Forms.Label();
             this.NameBox = new System.Windows.Forms.TextBox();
             this.HighscoreHeader = new System.Windows.Forms.Label();
+            this.HighscoreBox = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.Torpedo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Uboat)).BeginInit();
@@ -263,6 +264,15 @@
             this.HighscoreHeader.Text = "label1";
             this.HighscoreHeader.Visible = false;
             // 
+            // HighscoreBox
+            // 
+            this.HighscoreBox.Location = new System.Drawing.Point(194, 299);
+            this.HighscoreBox.Name = "HighscoreBox";
+            this.HighscoreBox.Size = new System.Drawing.Size(100, 96);
+            this.HighscoreBox.TabIndex = 15;
+            this.HighscoreBox.Text = "";
+            this.HighscoreBox.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -270,6 +280,7 @@
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.ClientSize = new System.Drawing.Size(1261, 627);
+            this.Controls.Add(this.HighscoreBox);
             this.Controls.Add(this.HighscoreHeader);
             this.Controls.Add(this.NameBox);
             this.Controls.Add(this.BossLevel);
@@ -326,6 +337,7 @@
         private System.Windows.Forms.ToolStripMenuItem pauseResumeToolStripMenuItem;
         private System.Windows.Forms.TextBox NameBox;
         private System.Windows.Forms.Label HighscoreHeader;
+        private System.Windows.Forms.RichTextBox HighscoreBox;
     }
 }
 

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace WindowsFormsApplication3
@@ -190,6 +191,8 @@ namespace WindowsFormsApplication3
             };
             SetElements(50);
 
+
+            HighscoreBox.Visible = false;
         }
 
         // Collision control, save, difficulty progression etc, BigBoat launching etc.
@@ -431,7 +434,15 @@ namespace WindowsFormsApplication3
 
         private void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            // For showing highscores.
+            HighscoreBox.Visible = true;
+            HighscoreBox.Text = XMLManager.ReadHighscores();
+
+            // Temporary gui bs
+            HighscoreBox.Width = 300;
+            HighscoreBox.Height = 300;
+            HighscoreBox.Location = new Point((ClientRectangle.Width / 2) - (HighscoreBox.Width / 2), (ClientRectangle.Height / 2) - (HighscoreBox.Height / 2));
+
+            HighscoreBox.Refresh();
         }
 
         private void submitHighscoreToolStripMenuItem_Click(object sender, EventArgs e)
@@ -446,7 +457,6 @@ namespace WindowsFormsApplication3
 
         class XMLManager
         {
-
             public static void XMLSubmit(string _player, int _score)
             {
                 string m_filepath = "Highscores.xml";
@@ -525,6 +535,26 @@ namespace WindowsFormsApplication3
                 doc.Save(m_filepath);                           // Updating the xml-doc at the filepath
                 SortXMLByScore(m_filepath);                     // Calling the sort function
             }
+
+            internal static string ReadHighscores()
+            {
+                string m_filepath = "Highscores.xml";
+                StringBuilder ReturnString = new StringBuilder();
+                XElement main = XElement.Load(@m_filepath);
+
+                /*
+                var results = main.Descendants("Highscores")
+                    .Descendants("Score")
+                    .Select(e => new { player = e.Descendants("Player").FirstOrDefault().Value, points = e.Descendants("Points").FirstOrDefault().Value });
+
+                foreach (var result in results)
+                {
+                    ReturnString.Append(result.player + result.points);
+                }
+                */
+
+                return main.ToString();
+            }
         }
     }
 }
@@ -564,7 +594,10 @@ namespace WindowsFormsApplication3
         F.Add new highscores instead of overwriting
         F.Save to .xml -- This is currently done, but in a seperate file so as to not much up this project.
         F.Open visual Menu for Highscore save within the Client
-        Display top 10 highscores from the XML doc.
+        f.Display top 10 highscores from the XML doc.
+        Fix the display of highscores. 
+        Fix the query up towards the xml doc
+        Display only top 10 scores.
 
     Pause
         F.When submitting score, you start a new game.

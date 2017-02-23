@@ -1,30 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace WindowsFormsApplication3
 {
 
     /// <summary>
-    /// Disclaimer: I do not feel like this project shows my current potential. Half-way through the project I knew 
-    /// I should have started over, but I didn't. Therefore there have been a whole lot of bad solutions and bad
-    /// structure. I have, however, learned a lot during this project.
-    /// 
-    /// Wanted implementation / original idea:
-    /// Enemy Class
-    ///     Uboat class, which inherits values from Enemy class.
-    ///     Boss class, which inherits values from Enemy Class.
-    /// Torpedo / Missile / Projectile Class
-    /// 
     /// The Form is resizable, and resizes when changes are made. All the elements should be resize-friendly, 
     /// except the Enemy placement on the Y axis. I think I can fix this quite easily with making the uPosY a range between
     /// object.height and ClientRectangle.Height - 25%(?) of ClientRectangle.Height. This means that the top 75% of the screen,
@@ -33,10 +19,6 @@ namespace WindowsFormsApplication3
     /// 
     /// Also wanted to add a proper function for whether the elements spawn left or right, which has been started on but abandoned
     /// mainly because I have focused on other implementations, bugfixes and other stuff that has annoyed me, and that are vital for passing.
-    /// 
-    /// The entire project would need a full re-write from the most basic of functions (missile movement, enemy movement) to
-    /// the more "advanced" (spawning enemies, ticks etc.) If I were to do it again, I would have done a more OOP approach, pref with 
-    /// more self-aware objects, asynchronous functions and other cool stuff I've learned the past months.
     /// 
     /// I also need to optimize the program further, since I see that it takes a bit more RAM than I would expect 
     /// for such a small project.
@@ -52,8 +34,9 @@ namespace WindowsFormsApplication3
         int UPosX, UPosY,
             UboatMinSpeed,
             UboatMaxSpeed,
-            USpeed,
-            TorpSpeed;
+            USpeed;
+
+        const int TorpSpeed = 25;
 
         Point ClickedPoint;
 
@@ -100,7 +83,6 @@ namespace WindowsFormsApplication3
                 ShotsFired = true;
                 Ammunition--;
                 ClickedPoint = PointToClient(Cursor.Position);
-                TorpSpeed = 25;
             }
         }
 
@@ -315,13 +297,12 @@ namespace WindowsFormsApplication3
 
         private void Form1_Click(object sender, EventArgs e)
         {
-            if (ShotsFired == false && Ammunition > 0)
-            {
-                ShotsFired = true;
-                Ammunition--;
-                ClickedPoint = PointToClient(Cursor.Position);
-                TorpSpeed = 25;
-            }
+            //if (ShotsFired == false && Ammunition > 0)
+            //{
+            //    ShotsFired = true;
+            //    Ammunition--;
+            //    ClickedPoint = PointToClient(Cursor.Position);
+            //}
         }
 
         // Enemy movement, creation and management.
@@ -592,7 +573,7 @@ namespace WindowsFormsApplication3
         f.Display top 10 highscores from the XML doc.
         Fix the display of highscores. 
         Fix the query up towards the xml doc
-        Display only top 10 scores.
+        n.Display only top 10 scores.
 
     Pause
         F.When submitting score, you start a new game.
@@ -601,7 +582,7 @@ namespace WindowsFormsApplication3
             F.One that sets it to the opposite value, no arg.
             F.On timer1.Start(), check that the score input boxes aren't showing using the designated method. Also on new game.
             F.Make the click event (missile fire) on picturebox2 disabled when game is paused.
-            Have text showing game is paused, and what button(s) to press to resume. p/spacebar
+            n.Have text showing game is paused, and what button(s) to press to resume. p/spacebar
 
     Add loss/game over condition
         F.Add condition
@@ -609,7 +590,7 @@ namespace WindowsFormsApplication3
 
     F.Add Pause function
         F.Pause button in menu field, also accessible by pressing "p" or spacebar.
-            Also add middle mouse button?
+            n.Also add middle mouse button?
             
     F.Missiles
         F.Missile no longer work as they should

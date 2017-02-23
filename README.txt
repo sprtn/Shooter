@@ -1,8 +1,16 @@
-Vermin!
+Instructions:
 
-All heads on deck, this is not a drill.
-We have found a location with high military traffic. The uboats are practically sitting ducks. They should be easy pray.
-Take down those pesky sub-par uboats. You should be able to manage to scavage enough ammunition from the wrecks to keep killing them.
-Be weary, though, the traffic seem to move faster the more you kill. Anyway, it's of no concern to me.
+Use mouse pointer for controls.
+LMB to shoot
+Spacebar or P to pause the game.
+Esc to close the app or any opened highscore items.
 
-Hail Hydra, and such.
+Det største problemet jeg har støtt på er definitivt innføringen av XML, da jeg gikk glipp av forelesningen. 
+Dokumentasjonen inne i Visual Studio og på Microsoft sine nettsteder har hjulpet meg en del, men slutt-resultatet
+er kanskje ikke helt slik jeg skulle ønske det skulle være (spesielt visning av Highscores). Jeg kunne gjort dette
+i .txt også, og det hadde nok vært enklere.
+
+I alle fall har jeg forsøkt å forbedre applikasjonen fortløpende, og å gjøre koden mer og mer presis og relevant,
+og å fjerne redundant koding. Hovedproblemet mitt var forsåvidt at jeg startet å programmere dette spillet uten å
+ha en klar plan i utgangspunktet. Nå som jeg har lært meg Visual Studio bedre, og er kjent med hvordan C# fungerer
+ville jeg ha hatt en annen tilnærming til prosjektet.

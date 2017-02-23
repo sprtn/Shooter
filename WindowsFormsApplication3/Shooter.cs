@@ -72,7 +72,7 @@ namespace WindowsFormsApplication3
             timer1.Enabled = true;                  // Starts timer1.
 
             // Sets base values ready the game.
-            ModifyBoatSpeeds();                // Sets the speed values needed for launching our enemies.
+            IncrementBoatSpeed();                // Sets the speed values needed for launching our enemies.
             StartVariables();                       // Self-explanatory title.
         }
 
@@ -127,7 +127,7 @@ namespace WindowsFormsApplication3
         {
             timer1.Stop();
             StartVariables();
-            ModifyBoatSpeeds();
+            IncrementBoatSpeed();
             ResetAllComp();
             UpdateLabelValues();
             SetGUI();
@@ -198,7 +198,7 @@ namespace WindowsFormsApplication3
                     if (DiffModifier % 10 == 0 && DiffModifier != 0)
                     {
                         LaunchBigBoat = true;
-                        ModifyBoatSpeeds();
+                        IncrementBoatSpeed();
                     }
                 }
                 
@@ -234,9 +234,7 @@ namespace WindowsFormsApplication3
         private void PauseGame(bool PauseGame)
         {
             if (PauseGame == true)
-            {
                 timer1.Stop();
-            }
             else
             {
                 DontDisplayHighscoreBoxes();
@@ -293,16 +291,6 @@ namespace WindowsFormsApplication3
             if (e.KeyChar == ' ' || e.KeyChar == 'p')
                 PauseGame();
             return;
-        }
-
-        private void Form1_Click(object sender, EventArgs e)
-        {
-            //if (ShotsFired == false && Ammunition > 0)
-            //{
-            //    ShotsFired = true;
-            //    Ammunition--;
-            //    ClickedPoint = PointToClient(Cursor.Position);
-            //}
         }
 
         // Enemy movement, creation and management.
@@ -362,14 +350,14 @@ namespace WindowsFormsApplication3
                 {
                     BigHP = 5;
                     BigSpeed = r.Next(UboatMinSpeed, UboatMaxSpeed);
-                    BigBoat.Location = new Point(-BigBoat.Width, r.Next(10 + BigBoat.Height, 750));
+                    BigBoat.Location = new Point(-BigBoat.Width, r.Next(150 + BigBoat.Height, 750));
                     BigBoat.Visible = true;
                 }
         }
 
         // Speed modification
 
-        private void ModifyBoatSpeeds()
+        private void IncrementBoatSpeed()
         { 
             if (UboatMinSpeed > 0 && UboatMaxSpeed > 10)
             {
@@ -388,9 +376,9 @@ namespace WindowsFormsApplication3
         private void MissileControl()
         {
             if (ShotsFired == true)
-                MoveMissile();
+                MoveMissile(); // Labmda this?
             else
-                MissileReset();
+                MissileReset(); // Lambda this?
         }
 
         private void MoveMissile()
@@ -430,6 +418,10 @@ namespace WindowsFormsApplication3
             HighscoreHeader.Visible = true;
             NameBox.Visible = true;
         }
+
+        /// <summary>
+        /// The XMLManager was made to deal with all the XML stuff. Saving to file, creating file, sorting and displaying.
+        /// </summary>
 
         class XMLManager
         {

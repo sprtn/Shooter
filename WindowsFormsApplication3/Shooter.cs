@@ -109,10 +109,9 @@ namespace WindowsFormsApplication3
         {
             if (e.KeyCode == Keys.Escape)
             {
-                if (NameBox.Visible == true)
+                if (NameBox.Visible == true || HighscoreBox.Visible == true)
                 {
-                    NameBox.Visible = false;
-                    HighscoreHeader.Visible = false;
+                    DontDisplayHighscoreBoxes();
                     PauseGame(false);
                 }
                 else
@@ -180,19 +179,19 @@ namespace WindowsFormsApplication3
                 IsClicked.Location = new Point(arg1 - IsClicked.Width, ClientRectangle.Height - arg1 / 2);
                 Difficulty.Location = new Point(ClientRectangle.Width - arg1, arg1 / 2);
                 BossLevel.Location = new Point(ClientRectangle.Width - arg1, arg1);
-                DontDisplayScoreInput();
+                HighscoreBox.Location = new Point((ClientRectangle.Width / 2) - (HighscoreBox.Width / 2), (ClientRectangle.Height / 2) - (HighscoreBox.Height / 2));
+                DontDisplayHighscoreBoxes();
             };
             Bnon SetElements = (arg1) => {
                 if (pictureBox2.Bounds != ClientRectangle)
                     pictureBox2.Bounds = ClientRectangle;
                 if (pictureBox2.Visible == false)
                     pictureBox2.Visible = true;
+                if (HighscoreBox.Visible == true)
+                    HighscoreBox.Visible = false;
                 UX(arg1);
             };
             SetElements(50);
-
-
-            HighscoreBox.Visible = false;
         }
 
         // Collision control, save, difficulty progression etc, BigBoat launching etc.
@@ -258,13 +257,15 @@ namespace WindowsFormsApplication3
             }
             else
             {
-                DontDisplayScoreInput();
+                DontDisplayHighscoreBoxes();
                 timer1.Start();
             }
         }
 
-        private void DontDisplayScoreInput()
+        private void DontDisplayHighscoreBoxes()
         {
+            if (HighscoreBox.Visible == true)
+                HighscoreBox.Visible = false;
             if (HighscoreHeader.Visible == true)
                 HighscoreHeader.Visible = false;
             if (NameBox.Visible == true)
@@ -276,17 +277,17 @@ namespace WindowsFormsApplication3
         {
             if (e.KeyChar == (char)Keys.Enter)
             {
-                string playerName = NameBox.Text ?? "Anon"; // Text should technically never be saved as null as you cannot submit the score without pressing on the textbox.
+                string playerName = NameBox.Text ?? "Anon"; // Text should technically never be saved as null as clicking on the textfield creates an empty string.
                 if (playerName.Length == 0)
-                    playerName = "Anon"; // The text-box starts off as "". An empty string, but not null.
+                    playerName = "Anon"; // For when the user saves a score without inputting a name.
                 XMLManager.XMLSubmit(playerName, Score);
                 NewGame();
             }
             else if (e.KeyChar == (char)Keys.Escape)
             {
-                if (NameBox.Visible == true)
+                if (NameBox.Visible == true || HighscoreBox.Visible == true)
                 {
-                    DontDisplayScoreInput();
+                    DontDisplayHighscoreBoxes();
                     timer1.Start();
                 }
                 else
@@ -300,7 +301,7 @@ namespace WindowsFormsApplication3
                 timer1.Stop();
             else
             {
-                DontDisplayScoreInput();
+                DontDisplayHighscoreBoxes();
                 timer1.Start();
             }
         }
@@ -434,21 +435,15 @@ namespace WindowsFormsApplication3
 
         private void showHighscoresToolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            DontDisplayHighscoreBoxes();
             HighscoreBox.Visible = true;
             HighscoreBox.Text = XMLManager.ReadHighscores();
-
-            // Temporary gui bs
-            HighscoreBox.Width = 300;
-            HighscoreBox.Height = 300;
-            HighscoreBox.Location = new Point((ClientRectangle.Width / 2) - (HighscoreBox.Width / 2), (ClientRectangle.Height / 2) - (HighscoreBox.Height / 2));
-
-            HighscoreBox.Refresh();
         }
 
         private void submitHighscoreToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PauseGame(true);
-            HighscoreHeader.Text = "Input your name below!";
+            DontDisplayHighscoreBoxes();
             NameBox.Location = new Point((ClientRectangle.Width / 2) - (NameBox.Width / 2), ClientRectangle.Height / 2 + NameBox.Height);
             HighscoreHeader.Location = new Point((ClientRectangle.Width / 2) - (HighscoreHeader.Width / 2), ClientRectangle.Height / 2);
             HighscoreHeader.Visible = true;

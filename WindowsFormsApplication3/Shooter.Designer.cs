@@ -257,18 +257,18 @@
             // 
             this.HighscoreHeader.AccessibleName = "HighscoreHeader";
             this.HighscoreHeader.AutoSize = true;
-            this.HighscoreHeader.Location = new System.Drawing.Point(597, 314);
+            this.HighscoreHeader.Location = new System.Drawing.Point(561, 314);
             this.HighscoreHeader.Name = "HighscoreHeader";
-            this.HighscoreHeader.Size = new System.Drawing.Size(35, 13);
+            this.HighscoreHeader.Size = new System.Drawing.Size(117, 13);
             this.HighscoreHeader.TabIndex = 14;
-            this.HighscoreHeader.Text = "label1";
+            this.HighscoreHeader.Text = "Input your name below!";
             this.HighscoreHeader.Visible = false;
             // 
             // HighscoreBox
             // 
-            this.HighscoreBox.Location = new System.Drawing.Point(194, 299);
+            this.HighscoreBox.Location = new System.Drawing.Point(88, 249);
             this.HighscoreBox.Name = "HighscoreBox";
-            this.HighscoreBox.Size = new System.Drawing.Size(100, 96);
+            this.HighscoreBox.Size = new System.Drawing.Size(300, 300);
             this.HighscoreBox.TabIndex = 15;
             this.HighscoreBox.Text = "";
             this.HighscoreBox.Visible = false;
